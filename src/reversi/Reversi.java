@@ -36,8 +36,11 @@ public class Reversi extends JPanel implements MouseListener{
 		griglia[3][4]=2;
 		griglia[4][3]=2;
 		
-		/*celleValide(griglia,2);
-		disegnaMappa(griglia);
+		celleValide(griglia,2);
+		repaint();
+		//prova
+		//prova2
+		/*disegnaMappa(griglia);
 		
 		while(partitaFinita(griglia)==0) {
 			boolean fatto=false;
