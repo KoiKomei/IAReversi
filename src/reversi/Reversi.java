@@ -14,7 +14,11 @@ public class Reversi extends JPanel implements MouseListener{
 
 	private int [][]griglia=new int[8][8];;
 	private Rectangle [][]quadrati=new Rectangle[8][8];;
-	
+	private boolean fatto=false;
+	private int player=2;
+	private int other=1;
+	//quadrati=boxes
+	//griglia=pieces
 	Reversi() {
 		
 		
@@ -35,142 +39,13 @@ public class Reversi extends JPanel implements MouseListener{
 		griglia[4][4]=1;
 		griglia[3][4]=2;
 		griglia[4][3]=2;
+		celleValide(player);
 		
-		celleValide(griglia,2);
-		repaint();
-		//prova
-		//prova2
-		/*disegnaMappa(griglia);
 		
-		while(partitaFinita(griglia)==0) {
-			boolean fatto=false;
-			boolean canMove=celleValide(griglia,2);
-			//funzione per dire a chi tocca
-			disegnaMappa(griglia);
-			int x=0, y=0;
-			boolean mossaValida=false;
-			boolean dodge=false;
-			
-			if(canMove) {
-				while(!mossaValida) {
-					while(!fatto) {
-						/*funzione per cliccare e chiudere la partita*
-						
-					}
-					
-					
-					int a=0, b=0;
-					
-					for(int i=0; i<8; i++) {
-						if(x>=512/8*i && x<512/8*(i+1))	
-							a=i;
-					}
-					for(int i=0; i<8; i++) {
-						if(y>=600/8*i && y<600/8*(i+1))
-							b=i;
-					}
-					if(a>=0 && a<8 && b>=0 && b<8 && griglia[a][b]==3) {
-						griglia[a][b]=2;
-						mossa(a,b,2,griglia);
-						mossaValida=true;
-					}
-					else {
-						
-						//messaggio per mossa non valida
-						fatto=false;
-					}
-						
-				}
-				
-			}
-			else {
-				//Il nero non può muoversi, time to dodge
-				dodge=true;
-				
-			}
-			mossaValida=false;
-			fatto=false;
-			
-			if(canMove) {
-				while(!mossaValida) {
-					while(!fatto) {
-						/*funzione per cliccare e chiudere la partita*
-						
-					}
-					
-					
-					int a=0, b=0;
-					
-					for(int i=0; i<8; i++) {
-						if(x>=512/8*i && x<512/8*(i+1))	
-							a=i;
-					}
-					for(int i=0; i<8; i++) {
-						if(y>=512/8*i && y<512/8*(i+1))
-							b=i;
-					}
-					if(a>=0 && a<8 && b>=0 && b<8 && griglia[a][b]==3) {
-						griglia[a][b]=1;
-						mossa(a,b,1,griglia);
-						mossaValida=true;
-					}
-					else {
-						
-						//messaggio per mossa non valida
-						fatto=false;
-					}
-						
-				}
-				
-			}
-			else {
-				//Il bianco non può muoversi, time to dodge
-				fatto=false;
-				if(dodge) {break;}
-				
-			}
-			dodge=false;
-				
-		}
-		disegnaMappa(griglia);
-		
-		if(partitaFinita(griglia)==1) {/*Messaggio vittoria nero*}
-		if(partitaFinita(griglia)==2) {/*Messaggio vittoria bianco*}
-		else {
-			int contB=0, contN=0;
-			for (int i=0; i<8; i++){
-	            for (int j=0; j<8; j++){
-	                if (griglia[i][j] == 1) contB++;
-	                if (griglia[i][j] == 2) contN++;
-	            }
-	        }
-			if(contB>contN) {/*Messaggio vittoria bianco*}
-			if(contN>contB) {/*Messaggio vittoria nero*}
-			if(contB==contN) {/*Messaggio pareggio*}
-			
-		}*/
 	}
 	
 	
 	public void paint(Graphics g) {
-		/*g.setColor(Color.BLACK);
-			g.fillRect(100, 100, 401, 401);
-			for(int i=100; i<500; i+=100) {
-					for(int j=100; j<=400; j+=100) {
-							g.fillRect(i, j, 50, 50);
-					}
-			}	
-			g.setColor(Color.GREEN);
-			for(int i=101; i<500; i+=50) {
-				for(int j=101; j<=500; j+=50) {
-						g.fillRect(i, j, 49, 49);
-					
-				}
-				
-			}
-			
-			
-		*/
 		int contB=0, contN=0;
 		g.setColor(Color.GREEN);
 		g.fillRect(100, 100, 600, 600);
@@ -186,12 +61,12 @@ public class Reversi extends JPanel implements MouseListener{
 			for(int j=0; j<griglia[0].length; j++) {
 				if(griglia[i][j]>0) {
 					if(griglia[i][j]==1) {
-						g.setColor(Color.BLACK);
-						contN++;
-					}
-					if(griglia[i][j]==2) {
 						g.setColor(Color.WHITE);
 						contB++;
+					}
+					if(griglia[i][j]==2) {
+						g.setColor(Color.BLACK);
+						contN++;
 					}
 					if(griglia[i][j]==3) {
 						g.setColor(Color.YELLOW);						
@@ -208,10 +83,9 @@ public class Reversi extends JPanel implements MouseListener{
 					
 				}
 						
-				}
+			}
 				
 		}
-	
 		
 	}
 	
@@ -244,9 +118,9 @@ public class Reversi extends JPanel implements MouseListener{
 		return 0;
 	}
 	
-	boolean celleValide(int griglia[][], int a) {
-		for(int i=0; i<8; i++) {
-				for(int j=0; j<8; j++) {
+	boolean celleValide(int a) {
+		for(int i=0; i<griglia.length; i++) {
+				for(int j=0; j<griglia[0].length; j++) {
 					if(griglia[i][j]==3)
 						griglia[i][j]=0;
 				}
@@ -257,11 +131,12 @@ public class Reversi extends JPanel implements MouseListener{
 		if(a==1) b=2;
 		boolean flag=false;
 		
-		for (int i=0; i<8; i++){
-	        for (int j=0; j<8; j++){
+		for (int i=0; i<griglia.length; i++){
+	        for (int j=0; j<griglia[0].length; j++){ //Scorre tutta la mappa
 	            if (griglia[i][j] == a){
 	                for (int k=i-1; k<=i+1; k++){
-	                    for (int l=j-1; l<=j+1; l++){
+	                    for (int l=j-1; l<=j+1; l++){ //Scorre intorno alla cella
+	                    		if(k>-1 && l>-1 && k<8 && l<8) {
 	                            if (griglia[k][l] == b){
 	                                if (k==i && l!=0 && l!=7){
 	                                    if (l==j-1){
@@ -308,13 +183,12 @@ public class Reversi extends JPanel implements MouseListener{
 	                                    if (griglia[y][x] == 0) {griglia[y][x] = 3; flag = true;}
 	                                }
 	                            }
-
+	                    }
 	                    }
 	                }
 	            }
 	        }
 	    }
-		
 		
 		return flag;
 		}
@@ -347,21 +221,24 @@ public class Reversi extends JPanel implements MouseListener{
 		*/
 	}
 	
-	boolean mossa(int x, int y, int player, int griglia[][]) {
+	boolean mossa(int x, int y, int p) {
 		
 		boolean flag = false;
 	    int g = 1;
-	    if (player == 1) g = 2;
+	    if (p == 1) g = 2;
 	    for (int i=x-1; i<=x+1; i++){
 	        for (int j=y-1; j<=y+1; j++){
-	            if (i>=0 && i<8 && j>=0 && j<8 && griglia[i][j]==g){
+	            if (i>=0 && i<griglia.length && j>=0 && j<griglia[0].length && griglia[i][j]==g){
 	                if (x==i){
 	                    if (y==j-1){
-	                        int k = j; int cont = 0;
-	                        while (k<7 && griglia[i][k] == g){k++; cont++;}
-	                        if (griglia[i][k] == player){
+	                        int k = j;
+	                        int cont = 0;
+	                        while (k<7 && griglia[i][k] == g){
+	                        	k++; cont++;
+	                        	}
+	                        if (griglia[i][k]==p){
 	                            while(cont > 0){
-	                                griglia[i][k-cont] = player;
+	                                griglia[i][k-cont] = p;
 	                                cont--; flag = true;
 	                            }
 	                        }
@@ -369,9 +246,9 @@ public class Reversi extends JPanel implements MouseListener{
 	                    if (y==j+1){
 	                        int k = j;int cont=0;
 	                        while (k>0 && griglia[i][k] == g){k--; cont++;}
-	                        if (griglia[i][k] == player){
+	                        if (griglia[i][k] == p){
 	                            while(cont > 0){
-	                                griglia[i][k+cont] = player;
+	                                griglia[i][k+cont] = p;
 	                                cont--; flag = true;
 	                            }
 	                        }
@@ -381,9 +258,9 @@ public class Reversi extends JPanel implements MouseListener{
 	                    if (x==i-1){
 	                        int k = i; int cont = 0;
 	                        while (k<7 && griglia[k][j] == g){k++; cont++;}
-	                        if (griglia[k][j] == player){
+	                        if (griglia[k][j] == p){
 	                            while(cont > 0){
-	                                griglia[k-cont][j] = player;
+	                                griglia[k-cont][j] = p;
 	                                cont--; flag = true;
 	                            }
 	                        }
@@ -391,9 +268,9 @@ public class Reversi extends JPanel implements MouseListener{
 	                    if (x==i+1){
 	                        int k = i; int cont=0;
 	                        while (k>0 && griglia[k][j] == g){k--; cont++;}
-	                        if (griglia[k][j] == player){
+	                        if (griglia[k][j] == p){
 	                            while(cont > 0){
-	                                griglia[k+cont][j] = player;
+	                                griglia[k+cont][j] = p;
 	                                cont--; flag = true;
 	                            }
 	                        }
@@ -402,9 +279,9 @@ public class Reversi extends JPanel implements MouseListener{
 	                if (x==i-1 && y==j-1){
 	                    int k = i, l = j, cont=0;
 	                    while (k<7 && l<7 && griglia[k][l] == g){k++; l++; cont++;}
-	                    if (griglia[k][l] == player){
+	                    if (griglia[k][l] == p){
 	                        while(cont > 0){
-	                            griglia[k-cont][l-cont] = player;
+	                            griglia[k-cont][l-cont] = p;
 	                            cont--; flag = true;
 	                        }
 	                    }
@@ -412,9 +289,9 @@ public class Reversi extends JPanel implements MouseListener{
 	                if (x==i+1 && y==j-1){
 	                    int k = i, l = j, cont=0;
 	                    while (k>0 && l<7 && griglia[k][l] == g){k--; l++; cont++;}
-	                    if (griglia[k][l] == player){
+	                    if (griglia[k][l] == p){
 	                        while(cont > 0){
-	                            griglia[k+cont][l-cont] = player;
+	                            griglia[k+cont][l-cont] = p;
 	                            cont--; flag = true;
 	                        }
 	                    }
@@ -422,9 +299,9 @@ public class Reversi extends JPanel implements MouseListener{
 	                if (x==i+1 && y==j+1){
 	                    int k = i, l = j, cont=0;
 	                    while (k>0 && l>0 && griglia[k][l] == g){k--; l--; cont++;}
-	                    if (griglia[k][l] == player){
+	                    if (griglia[k][l] ==p){
 	                        while(cont > 0){
-	                            griglia[k+cont][l+cont] = player;
+	                            griglia[k+cont][l+cont] = p;
 	                            cont--; flag = true;
 	                        }
 	                    }
@@ -432,9 +309,9 @@ public class Reversi extends JPanel implements MouseListener{
 	                if (x==i-1 && y==j+1){
 	                    int k = i, l = j, cont=0;
 	                    while (k<7 && l>0 && griglia[k][l] == g){k++; l--; cont++;}
-	                    if (griglia[k][l] == player){
+	                    if (griglia[k][l] == p){
 	                        while(cont > 0){
-	                            griglia[k-cont][l+cont] = player;
+	                            griglia[k-cont][l+cont] = p;
 	                            cont--; flag = true;
 	                        }
 	                    }
@@ -448,7 +325,7 @@ public class Reversi extends JPanel implements MouseListener{
 	
 
 	@Override
-	public void mouseClicked(MouseEvent arg0) {
+	public void mouseReleased(MouseEvent arg0) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -466,14 +343,50 @@ public class Reversi extends JPanel implements MouseListener{
 	}
 
 	@Override
-	public void mousePressed(MouseEvent arg0) {
+	public void mouseClicked(MouseEvent arg0) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void mouseReleased(MouseEvent arg0) {
-		// TODO Auto-generated method stub
+	public void mousePressed(MouseEvent evt) {
+		int x = evt.getX();
+		int y = evt.getY();
+		int cont=0;
 		
+		for(int i=0; i<quadrati.length; i++) {
+			for(int j=0; j<quadrati[0].length; j++) {
+				if(quadrati[i][j].contains(evt.getPoint())) {
+					System.out.println(i+" "+j);
+					if(griglia[i][j]==3) {
+						griglia[i][j]=player;
+						mossa(i,j,player);
+						if(player!=other) {
+							player=other;
+						}
+						else {
+							player=2;
+						}
+						celleValide(player);
+						break;
+					}
+				else {
+					cont++;
+					System.out.println("Mossa errata");
+					}
+				}
+				
+			}
+		}
+		for(int i=0; i<griglia.length; i++) {
+			for(int j=0; j<griglia.length; j++) {
+				System.out.print(griglia[j][i]+ " ");
+			}
+			System.out.println();
+		}
+		System.out.println();
+		repaint();
 	}
+
+	
 }
