@@ -5,24 +5,29 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 import javax.swing.JPanel;
 
-public class Reversi extends JPanel implements MouseListener{
+public class Reversi extends JPanel implements MouseListener, KeyListener{
 
 	private int [][]griglia=new int[8][8];;
 	private Rectangle [][]quadrati=new Rectangle[8][8];;
 	private boolean fatto=false;
 	private int player=2;
 	private int other=1;
+	
 	//quadrati=boxes
 	//griglia=pieces
 	Reversi() {
 		
 		
 		addMouseListener(this);
+		addKeyListener(this);
+		setFocusable(true);
 		for(int i=0; i<quadrati.length; i++) {
 			for(int j=0; j<quadrati[0].length; j++) {
 				quadrati[i][j]=new Rectangle(100+i*75,100+j*75,75,75);
@@ -47,16 +52,20 @@ public class Reversi extends JPanel implements MouseListener{
 	
 	public void paint(Graphics g) {
 		int contB=0, contN=0;
+		g.setColor(Color.LIGHT_GRAY);
+		g.fillRect(0, 0, 800, 800);
 		g.setColor(Color.GREEN);
 		g.fillRect(100, 100, 600, 600);
 		g.setColor(Color.BLACK);
+		
 		Graphics2D g2 = (Graphics2D)g;
 		for(int i=0; i<quadrati.length; i++) {
 			for(int j=0; j<quadrati[0].length; j++) {
-				g2.draw(quadrati[i][j]);				
+				g2.draw(quadrati[i][j]);
 			}
 			
 		}
+		
 		for(int i=0; i<griglia.length; i++) {
 			for(int j=0; j<griglia[0].length; j++) {
 				if(griglia[i][j]>0) {
@@ -86,12 +95,51 @@ public class Reversi extends JPanel implements MouseListener{
 			}
 				
 		}
-		
+		Font current=g.getFont();
+		Font newFont=current.deriveFont(current.getSize()*3.0f);
+		g.setFont(newFont);
+		g.setColor(Color.BLACK);
+		g.drawString("Neri: "+contN, 100, 50);
+		g.setColor(Color.WHITE);
+		g.drawString("Bianchi: "+contB, 550, 50);
+		if(partitaFinita()==0) {
+			g.drawString("Premi R resettare", 250, 750);
+		if(player!=other) {
+			g.setColor(Color.BLACK);
+			g.drawString("Tocca al Nero", 250, 50);
+		}
+		else {
+			g.drawString("Tocca al Bianco", 250, 50);
+			}
+		}
+		else {
+			if(partitaFinita()==1) {
+				g.drawString("Vince il Bianco", 250, 50);
+			}
+			else {
+				if(partitaFinita()==2) {
+					g.drawString("Vince il Nero", 250, 50);
+				}
+				else {
+					if(partitaFinita()==3){
+						if(contB>contN) g.drawString("Vince il Bianco", 250, 50);
+						if(contN>contB) g.drawString("Vince il Nero", 250, 50);
+						if(contB==contN) g.drawString("Pareggio", 250, 50);
+						removeMouseListener(this);
+						g.drawString("Premi R per fare una nuova partita", 125, 750);
+					}
+				}
+			}
+			
+		}
+		System.out.println("Lo score dei neri è "+contN);
+		System.out.println("Lo score dei bianchi è "+contB);
+			
 	}
 	
 	
 	
-	int partitaFinita(int griglia[][]) {
+	int partitaFinita() {
 		boolean isB=false;
 		boolean isN=false;
 		boolean isFull=true;
@@ -191,35 +239,8 @@ public class Reversi extends JPanel implements MouseListener{
 	    }
 		
 		return flag;
-		}
-	
-	
-	void disegnaMappa(int griglia[][]) {
-		int contN=0, contB=0;
-		for(int i=0; i<8; i++) {
-			for(int j=0; j<8; j++) {
-				if(griglia[i][j]==1) {
-					contB++;
-					//inserire funzione per disegnare un pallino bianco					
-				}
-				if(griglia[i][j]==2) {
-					contN++;
-					//inserire funzione per disegnare un pallino nero
-					
-				}
-				if(griglia[i][j]==3) {
-					//inserire funzione per disegnare un pallino giallo
-					
-				}
-				
-			}
-			
-		}
-		/*Necessità di zone per il punteggio
-		 * bianco
-		 * nero
-		*/
 	}
+	
 	
 	boolean mossa(int x, int y, int p) {
 		
@@ -319,6 +340,7 @@ public class Reversi extends JPanel implements MouseListener{
 	            }
 	        }
 	    }
+	 
 	    return flag;
 	}
 	
@@ -353,7 +375,7 @@ public class Reversi extends JPanel implements MouseListener{
 		int x = evt.getX();
 		int y = evt.getY();
 		int cont=0;
-		
+		int cont2=0;
 		for(int i=0; i<quadrati.length; i++) {
 			for(int j=0; j<quadrati[0].length; j++) {
 				if(quadrati[i][j].contains(evt.getPoint())) {
@@ -363,9 +385,11 @@ public class Reversi extends JPanel implements MouseListener{
 						mossa(i,j,player);
 						if(player!=other) {
 							player=other;
+							System.out.println("Tocca al giocatore Bianco");
 						}
 						else {
 							player=2;
+							System.out.println("Tocca al giocatore Nero");
 						}
 						celleValide(player);
 						break;
@@ -378,14 +402,74 @@ public class Reversi extends JPanel implements MouseListener{
 				
 			}
 		}
+		
 		for(int i=0; i<griglia.length; i++) {
 			for(int j=0; j<griglia.length; j++) {
+				if(griglia[i][j]==3) {
+					cont2++;					
+				}
 				System.out.print(griglia[j][i]+ " ");
 			}
 			System.out.println();
 		}
 		System.out.println();
+		if(cont2==0) {
+			if(player!=other) {
+				player=other;
+				System.out.println("Tocca al giocatore Bianco perché il Nero non ha mosse");
+			}
+			else {
+				player=2;
+				System.out.println("Tocca al giocatore Nero perché il Bianco non ha mosse");
+			}
+			if(!celleValide(player)) {
+				System.out.println("Partita finita, nessuno dei due può muoversi");
+			}
+		}
 		repaint();
+	}
+
+
+	@Override
+	public void keyPressed(KeyEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	
+	@Override
+	public void keyReleased(KeyEvent e) {
+		if(e.getKeyCode()==KeyEvent.VK_A) {
+			System.out.println("A pressed");
+		}
+		if(e.getKeyCode()==KeyEvent.VK_R) {
+			System.out.println(partitaFinita());
+			
+				System.out.println(partitaFinita());
+				addMouseListener(this);
+				for(int i=0; i<griglia.length; i++) {
+					for(int j=0; j<griglia[0].length; j++) {
+						griglia[i][j]=0;				
+					}
+					
+				}
+				griglia[3][3]=1;
+				griglia[4][4]=1;
+				griglia[3][4]=2;
+				griglia[4][3]=2;
+				player=2;
+				celleValide(player);
+				repaint();
+			
+		}
+		
+	}
+
+
+	@Override
+	public void keyTyped(KeyEvent arg0) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	
