@@ -391,7 +391,10 @@ public class Reversi extends JPanel implements MouseListener, KeyListener{
 			}
 			
 			if (risposta != null) {
-				mossa(risposta.getX(), risposta.getY(), 1);
+				int xx = risposta.getX(); int yy = risposta.getY();
+				griglia[xx][yy] = 1;
+				mossa(xx, yy, 1);
+				System.out.println("La risposta e': " + xx + " " + yy);
 			}
 			else {
 				System.out.println("risposta e' null");
@@ -523,7 +526,7 @@ public class Reversi extends JPanel implements MouseListener, KeyListener{
 			repaint();
 			
 			try {
-				Thread.sleep(3000);
+				//Thread.sleep(300);
 				executeIA();
 			}catch(Exception e) {
 				e.printStackTrace();
@@ -557,11 +560,6 @@ public class Reversi extends JPanel implements MouseListener, KeyListener{
 		
 	}
 
-
-	
-	
-	
-	
 	
 	@Override
 	public void keyPressed(KeyEvent e) {
