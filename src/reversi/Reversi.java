@@ -9,8 +9,18 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JPanel;
+import it.unical.mat.embasp.base.Handler;
+import it.unical.mat.embasp.base.InputProgram;
+import it.unical.mat.embasp.languages.asp.ASPInputProgram;
+import it.unical.mat.embasp.languages.asp.ASPMapper;
+import it.unical.mat.embasp.languages.asp.AnswerSet;
+import it.unical.mat.embasp.languages.asp.AnswerSets;
+import it.unical.mat.embasp.platforms.desktop.DesktopHandler;
+import it.unical.mat.embasp.specializations.dlv.desktop.DLVDesktopService;
 
 public class Reversi extends JPanel implements MouseListener, KeyListener{
 
@@ -19,6 +29,8 @@ public class Reversi extends JPanel implements MouseListener, KeyListener{
 	private boolean fatto=false;
 	private int player=2;
 	private int other=1;
+	
+	private Handler handler;
 	
 	//quadrati=boxes
 	//griglia=pieces
@@ -166,6 +178,7 @@ public class Reversi extends JPanel implements MouseListener, KeyListener{
 		return 0;
 	}
 	
+	//pulisce le celle gialle e le ripiazza dopo una mossa
 	boolean celleValide(int a) {
 		for(int i=0; i<griglia.length; i++) {
 				for(int j=0; j<griglia[0].length; j++) {
@@ -231,7 +244,7 @@ public class Reversi extends JPanel implements MouseListener, KeyListener{
 	                                    if (griglia[y][x] == 0) {griglia[y][x] = 3; flag = true;}
 	                                }
 	                            }
-	                    }
+	                    	}
 	                    }
 	                }
 	            }
@@ -240,8 +253,8 @@ public class Reversi extends JPanel implements MouseListener, KeyListener{
 		
 		return flag;
 	}
-	
-	
+		
+	//esegue la mossa e cattura le pedine
 	boolean mossa(int x, int y, int p) {
 		
 		boolean flag = false;
@@ -343,77 +356,79 @@ public class Reversi extends JPanel implements MouseListener, KeyListener{
 	 
 	    return flag;
 	}
-	
-	
 
-	@Override
-	public void mouseReleased(MouseEvent arg0) {
-		// TODO Auto-generated method stub
+	private void executeIA() {
 		
-	}
-
-	@Override
-	public void mouseEntered(MouseEvent arg0) {
-		// TODO Auto-generated method stub
+		List<Cell> celle = new ArrayList<Cell>();
 		
-	}
+		handler = new DesktopHandler(new DLVDesktopService("lib/dlv.mingw.exe"));
 
-	@Override
-	public void mouseExited(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mouseClicked(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mousePressed(MouseEvent evt) {
-		int x = evt.getX();
-		int y = evt.getY();
-		int cont=0;
-		int cont2=0;
-		for(int i=0; i<quadrati.length; i++) {
-			for(int j=0; j<quadrati[0].length; j++) {
-				if(quadrati[i][j].contains(evt.getPoint())) {
-					System.out.println(i+" "+j);
-					if(griglia[i][j]==3) {
-						griglia[i][j]=player;
-						mossa(i,j,player);
-						if(player!=other) {
-							player=other;
-							System.out.println("Tocca al giocatore Bianco");
-						}
-						else {
-							player=2;
-							System.out.println("Tocca al giocatore Nero");
-						}
-						celleValide(player);
-						break;
-					}
-				else {
-					cont++;
-					System.out.println("Mossa errata");
+		try {
+			
+			InputProgram facts = new ASPInputProgram();
+			facts.addFilesPath("encodings/easy");
+			for (int i = 0; i < griglia.length; i++) {
+				for(int j = 0; j < griglia[0].length; j++) {
+					if (griglia[i][j] == 3) {
+						Cell cella = new Cell(i , j);
+						facts.addObjectInput(cella);
 					}
 				}
-				
 			}
+			
+			handler.addProgram(facts);
+			
+			ASPMapper.getInstance().registerClass(Answer.class);
+		
+			AnswerSets answers = (AnswerSets) handler.startSync();
+			
+			AnswerSet answer = answers.getAnswersets().get(0);
+			
+			Answer risposta = null;
+			
+			for (Object obj : answer.getAtoms()) {
+				if (obj instanceof Answer) risposta = (Answer) obj;
+			}
+			
+			if (risposta != null) {
+				mossa(risposta.getX(), risposta.getY(), 1);
+			}
+			else {
+				System.out.println("risposta e' null");
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		
+		//scambia i giocatori
+		if(player!=other) {
+			player=other;
+			System.out.println("Tocca al giocatore Bianco");
+		}
+		else {
+			player=2;
+			System.out.println("Tocca al giocatore Nero");
+		}
+		celleValide(player);
+		
+		//contatore per accertarsi che ci siano mosse esegubili
+		int cont2 = 0;
+		
+		//si accerta che ci siano mosse disponibili
 		for(int i=0; i<griglia.length; i++) {
 			for(int j=0; j<griglia.length; j++) {
 				if(griglia[i][j]==3) {
 					cont2++;					
 				}
-				System.out.print(griglia[j][i]+ " ");
+				//System.out.print(griglia[j][i]+ " ");
 			}
-			System.out.println();
+			//System.out.println();
 		}
-		System.out.println();
-		if(cont2==0) {
+		//System.out.println();
+		
+		//se non ci sono mosse disponibili, cambia giocatore, se non ne ha neanche l'altro, finisce la partita
+		if (cont2==0) {
 			if(player!=other) {
 				player=other;
 				System.out.println("Tocca al giocatore Bianco perché il Nero non ha mosse");
@@ -426,22 +441,99 @@ public class Reversi extends JPanel implements MouseListener, KeyListener{
 				System.out.println("Partita finita, nessuno dei due può muoversi");
 			}
 		}
+		
+		//ridisegna sul canvas
 		repaint();
-	}
-
-
-	@Override
-	public void keyPressed(KeyEvent arg0) {
-		// TODO Auto-generated method stub
 		
 	}
-
 	
 	@Override
-	public void keyReleased(KeyEvent e) {
-		if(e.getKeyCode()==KeyEvent.VK_A) {
-			System.out.println("A pressed");
+	public void mousePressed(MouseEvent evt) {
+		
+		//se e' il turno del giocatore
+		if (player == 2) {
+		
+			int x = evt.getX();
+			int y = evt.getY();
+			
+			//scorre la scacchiera e riconosce la cella cliccata
+			for(int i=0; i<quadrati.length; i++) {
+				for(int j=0; j<quadrati[0].length; j++) {
+					if(quadrati[i][j].contains(evt.getPoint())) {
+						//System.out.println(i+" "+j);
+						
+						//se la cella e' gialla
+						if(griglia[i][j]==3) {
+							
+							//esegui la mossa
+							griglia[i][j] = player;
+							mossa(i,j,player);
+							
+							//scambia i giocatori
+							if(player!=other) {
+								player=other;
+								System.out.println("Tocca al giocatore Bianco");
+							}
+							else {
+								player=2;
+								System.out.println("Tocca al giocatore Nero");
+							}
+							celleValide(player);
+							break;
+						}
+					else {
+						System.out.println("Mossa errata");
+						}
+					}
+					
+				}
+			}
+			
+			//contatore per accertarsi che ci siano mosse esegubili
+			int cont2 = 0;
+			
+			//si accerta che ci siano mosse disponibili
+			for(int i=0; i<griglia.length; i++) {
+				for(int j=0; j<griglia.length; j++) {
+					if(griglia[i][j]==3) {
+						cont2++;					
+					}
+					System.out.print(griglia[j][i]+ " ");
+				}
+				System.out.println();
+			}
+			System.out.println();
+			
+			//se non ci sono mosse disponibili, cambia giocatore, se non ne ha neanche l'altro, finisce la partita
+			if (cont2==0) {
+				if(player!=other) {
+					player=other;
+					System.out.println("Tocca al giocatore Bianco perché il Nero non ha mosse");
+				}
+				else {
+					player=2;
+					System.out.println("Tocca al giocatore Nero perché il Bianco non ha mosse");
+				}
+				if(!celleValide(player)) {
+					System.out.println("Partita finita, nessuno dei due può muoversi");
+				}
+			}
+			
+			//ridisegna sul canvas
+			repaint();
+			
+			try {
+				Thread.sleep(3000);
+				executeIA();
+			}catch(Exception e) {
+				e.printStackTrace();
+			}
 		}
+	}
+	
+	//gestisce solo il reset
+	@Override
+	public void keyReleased(KeyEvent e) {
 		if(e.getKeyCode()==KeyEvent.VK_R) {
 			System.out.println(partitaFinita());
 			
@@ -466,11 +558,50 @@ public class Reversi extends JPanel implements MouseListener, KeyListener{
 	}
 
 
+	
+	
+	
+	
+	
 	@Override
-	public void keyTyped(KeyEvent arg0) {
+	public void keyPressed(KeyEvent e) {
 		// TODO Auto-generated method stub
 		
 	}
 
+
+	@Override
+	public void keyTyped(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void mouseClicked(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void mouseEntered(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void mouseExited(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void mouseReleased(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }
