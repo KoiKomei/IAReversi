@@ -29,6 +29,7 @@ public class Reversi extends JPanel implements MouseListener, KeyListener{
 	private boolean fatto=false;
 	private int player=2;
 	private int other=1;
+	protected boolean thinking = false;
 	
 	private Handler handler;
 	
@@ -63,6 +64,7 @@ public class Reversi extends JPanel implements MouseListener, KeyListener{
 	
 	
 	public void paint(Graphics g) {
+		System.out.println("repaint iniziato");
 		int contB=0, contN=0;
 		g.setColor(Color.LIGHT_GRAY);
 		g.fillRect(0, 0, 800, 800);
@@ -144,6 +146,14 @@ public class Reversi extends JPanel implements MouseListener, KeyListener{
 			}
 			
 		}
+		
+		if (thinking) {
+			g.setColor(Color.LIGHT_GRAY);
+			g.fillRect(300, 370, 200, 60);
+			g.setColor(Color.RED);
+			g.drawString("Thinking", 330, 410);
+		}
+		
 		System.out.println("Lo score dei neri è "+contN);
 		System.out.println("Lo score dei bianchi è "+contB);
 			
@@ -357,96 +367,13 @@ public class Reversi extends JPanel implements MouseListener, KeyListener{
 	    return flag;
 	}
 
-	private void executeIA() {
+	private void executeIA() throws InterruptedException {
 		
-		List<Cell> celle = new ArrayList<Cell>();
+		//Thread.sleep(1000);
 		
-		handler = new DesktopHandler(new DLVDesktopService("lib/dlv.mingw.exe"));
-
-		try {
-			
-			InputProgram facts = new ASPInputProgram();
-			facts.addFilesPath("encodings/easy");
-			for (int i = 0; i < griglia.length; i++) {
-				for(int j = 0; j < griglia[0].length; j++) {
-					if (griglia[i][j] == 3) {
-						Cell cella = new Cell(i , j);
-						facts.addObjectInput(cella);
-					}
-				}
-			}
-			
-			handler.addProgram(facts);
-			
-			ASPMapper.getInstance().registerClass(Answer.class);
+		ThreadIA thread = new ThreadIA();
 		
-			AnswerSets answers = (AnswerSets) handler.startSync();
-			
-			AnswerSet answer = answers.getAnswersets().get(0);
-			
-			Answer risposta = null;
-			
-			for (Object obj : answer.getAtoms()) {
-				if (obj instanceof Answer) risposta = (Answer) obj;
-			}
-			
-			if (risposta != null) {
-				int xx = risposta.getX(); int yy = risposta.getY();
-				griglia[xx][yy] = 1;
-				mossa(xx, yy, 1);
-				System.out.println("La risposta e': " + xx + " " + yy);
-			}
-			else {
-				System.out.println("risposta e' null");
-			}
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		//scambia i giocatori
-		if(player!=other) {
-			player=other;
-			System.out.println("Tocca al giocatore Bianco");
-		}
-		else {
-			player=2;
-			System.out.println("Tocca al giocatore Nero");
-		}
-		celleValide(player);
-		
-		//contatore per accertarsi che ci siano mosse esegubili
-		int cont2 = 0;
-		
-		//si accerta che ci siano mosse disponibili
-		for(int i=0; i<griglia.length; i++) {
-			for(int j=0; j<griglia.length; j++) {
-				if(griglia[i][j]==3) {
-					cont2++;					
-				}
-				//System.out.print(griglia[j][i]+ " ");
-			}
-			//System.out.println();
-		}
-		//System.out.println();
-		
-		//se non ci sono mosse disponibili, cambia giocatore, se non ne ha neanche l'altro, finisce la partita
-		if (cont2==0) {
-			if(player!=other) {
-				player=other;
-				System.out.println("Tocca al giocatore Bianco perché il Nero non ha mosse");
-			}
-			else {
-				player=2;
-				System.out.println("Tocca al giocatore Nero perché il Bianco non ha mosse");
-			}
-			if(!celleValide(player)) {
-				System.out.println("Partita finita, nessuno dei due può muoversi");
-			}
-		}
-		
-		//ridisegna sul canvas
-		repaint();
+		thread.start();
 		
 	}
 	
@@ -522,11 +449,14 @@ public class Reversi extends JPanel implements MouseListener, KeyListener{
 				}
 			}
 			
+			thinking = true;
+			
 			//ridisegna sul canvas
 			repaint();
 			
 			try {
-				//Thread.sleep(300);
+//				Thread.sleep(2000);
+//				System.out.println("sleep finito");
 				executeIA();
 			}catch(Exception e) {
 				e.printStackTrace();
@@ -602,4 +532,107 @@ public class Reversi extends JPanel implements MouseListener, KeyListener{
 		
 	}
 	
-}
+	private class ThreadIA extends Thread {
+		
+		List<Cell> celle = new ArrayList<Cell>();
+		
+		public void run() {
+		
+			handler = new DesktopHandler(new DLVDesktopService("lib/dlv.mingw.exe"));
+	
+			
+			
+			try {
+				
+				Thread.sleep(500);
+				
+				InputProgram facts = new ASPInputProgram();
+				facts.addFilesPath("encodings/easy");
+				for (int i = 0; i < griglia.length; i++) {
+					for(int j = 0; j < griglia[0].length; j++) {
+						if (griglia[i][j] == 3) {
+							Cell cella = new Cell(i , j);
+							facts.addObjectInput(cella);
+						}
+					}
+				}
+				
+				handler.addProgram(facts);
+				
+				ASPMapper.getInstance().registerClass(Answer.class);
+			
+				AnswerSets answers = (AnswerSets) handler.startSync();
+				
+				AnswerSet answer = answers.getAnswersets().get(0);
+				
+				Answer risposta = null;
+				
+				for (Object obj : answer.getAtoms()) {
+					if (obj instanceof Answer) risposta = (Answer) obj;
+				}
+				
+				if (risposta != null) {
+					int xx = risposta.getX(); int yy = risposta.getY();
+					griglia[xx][yy] = 1;
+					mossa(xx, yy, 1);
+					System.out.println("La risposta e': " + xx + " " + yy);
+				}
+				else {
+					System.out.println("risposta e' null");
+				}
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+			//scambia i giocatori
+			if(player!=other) {
+				player=other;
+				System.out.println("Tocca al giocatore Bianco");
+			}
+			else {
+				player=2;
+				System.out.println("Tocca al giocatore Nero");
+			}
+			celleValide(player);
+			
+			//contatore per accertarsi che ci siano mosse esegubili
+			int cont2 = 0;
+			
+			//si accerta che ci siano mosse disponibili
+			for(int i=0; i<griglia.length; i++) {
+				for(int j=0; j<griglia.length; j++) {
+					if(griglia[i][j]==3) {
+						cont2++;					
+					}
+					//System.out.print(griglia[j][i]+ " ");
+				}
+				//System.out.println();
+			}
+			//System.out.println();
+			
+			//se non ci sono mosse disponibili, cambia giocatore, se non ne ha neanche l'altro, finisce la partita
+			if (cont2==0) {
+				if(player!=other) {
+					player=other;
+					System.out.println("Tocca al giocatore Bianco perché il Nero non ha mosse");
+				}
+				else {
+					player=2;
+					System.out.println("Tocca al giocatore Nero perché il Bianco non ha mosse");
+				}
+				if(!celleValide(player)) {
+					System.out.println("Partita finita, nessuno dei due può muoversi");
+				}
+			}
+			
+			thinking = false;
+			
+			//ridisegna sul canvas
+			repaint();
+			
+		}//RUN
+		
+	}//THREADIA
+	
+}//REVERSI

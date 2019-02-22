@@ -1,0 +1,3 @@
+place(X,Y) | dontplace(X,Y) :- cell(X,Y).
+
+answer(X,Y) :- place(X,Y).
