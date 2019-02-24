@@ -442,6 +442,12 @@ public class Reversi extends JPanel implements MouseListener, KeyListener{
 				if(player!=other) {
 					player=other;
 					System.out.println("Tocca al giocatore Bianco perché il Nero non ha mosse");
+					repaint();
+					try {
+						executeIA();
+					}catch(Exception e) {
+						e.printStackTrace();
+					}
 				}
 				else {
 					player=2;
@@ -571,7 +577,10 @@ public class Reversi extends JPanel implements MouseListener, KeyListener{
 				Answer risposta = null;
 				
 				for (Object obj : answer.getAtoms()) {
-					if (obj instanceof Answer) risposta = (Answer) obj;
+					if (obj instanceof Answer) {
+						risposta = (Answer) obj;
+						System.out.println("La non risposta e': " + risposta.getX() + " " + risposta.getY());
+					}
 				}
 				
 				if (risposta != null) {
@@ -619,6 +628,12 @@ public class Reversi extends JPanel implements MouseListener, KeyListener{
 				if(player!=other) {
 					player=other;
 					System.out.println("Tocca al giocatore Bianco perché il Nero non ha mosse");
+					repaint();
+					try {
+						executeIA();
+					}catch(Exception e) {
+						e.printStackTrace();
+					}
 				}
 				else {
 					player=2;
