@@ -451,7 +451,7 @@ public class Reversi extends JPanel implements MouseListener, KeyListener{
 					System.out.println("Partita finita, nessuno dei due può muoversi");
 				}
 			}
-			if(player==1) {
+			
 			thinking = true;
 			
 			//ridisegna sul canvas
@@ -463,7 +463,6 @@ public class Reversi extends JPanel implements MouseListener, KeyListener{
 				executeIA();
 			}catch(Exception e) {
 				e.printStackTrace();
-				}
 			}
 		}
 	}
@@ -553,11 +552,7 @@ public class Reversi extends JPanel implements MouseListener, KeyListener{
 				Thread.sleep(500);
 				
 				InputProgram facts = new ASPInputProgram();
-<<<<<<< HEAD
-				facts.addFilesPath("encodings/medium");
-=======
 				facts.addFilesPath(settings);
->>>>>>> branch 'master' of https://github.com/KoiKomei/IAReversi.git
 				for (int i = 0; i < griglia.length; i++) {
 					for(int j = 0; j < griglia[0].length; j++) {
 						Cell cella = new Cell(i , j, griglia[i][j]);
