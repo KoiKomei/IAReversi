@@ -30,17 +30,19 @@ public class Reversi extends JPanel implements MouseListener, KeyListener{
 	private int player=2;
 	private int other=1;
 	protected boolean thinking = false;
+	private String settings;
 	
 	private Handler handler;
 	
 	//quadrati=boxes
 	//griglia=pieces
-	Reversi() {
+	Reversi(String ia) {
 		
 		
 		addMouseListener(this);
 		addKeyListener(this);
 		setFocusable(true);
+		settings=ia;
 		for(int i=0; i<quadrati.length; i++) {
 			for(int j=0; j<quadrati[0].length; j++) {
 				quadrati[i][j]=new Rectangle(100+i*75,100+j*75,75,75);
@@ -64,6 +66,7 @@ public class Reversi extends JPanel implements MouseListener, KeyListener{
 	
 	
 	public void paint(Graphics g) {
+		requestFocus();
 		System.out.println("repaint iniziato");
 		int contB=0, contN=0;
 		g.setColor(Color.LIGHT_GRAY);
@@ -113,32 +116,32 @@ public class Reversi extends JPanel implements MouseListener, KeyListener{
 		Font newFont=current.deriveFont(current.getSize()*3.0f);
 		g.setFont(newFont);
 		g.setColor(Color.BLACK);
-		g.drawString("Neri: "+contN, 100, 50);
+		g.drawString("Neri: "+contN, 100, 60);
 		g.setColor(Color.WHITE);
-		g.drawString("Bianchi: "+contB, 550, 50);
+		g.drawString("Bianchi: "+contB, 550, 60);
 		if(partitaFinita()==0) {
 			g.drawString("Premi R resettare", 250, 750);
 		if(player!=other) {
 			g.setColor(Color.BLACK);
-			g.drawString("Tocca al Nero", 250, 50);
+			g.drawString("Tocca al Nero", 250, 60);
 		}
 		else {
-			g.drawString("Tocca al Bianco", 250, 50);
+			g.drawString("Tocca al Bianco", 250, 60);
 			}
 		}
 		else {
 			if(partitaFinita()==1) {
-				g.drawString("Vince il Bianco", 250, 50);
+				g.drawString("Vince il Bianco", 250, 60);
 			}
 			else {
 				if(partitaFinita()==2) {
-					g.drawString("Vince il Nero", 250, 50);
+					g.drawString("Vince il Nero", 250, 60);
 				}
 				else {
 					if(partitaFinita()==3){
-						if(contB>contN) g.drawString("Vince il Bianco", 250, 50);
-						if(contN>contB) g.drawString("Vince il Nero", 250, 50);
-						if(contB==contN) g.drawString("Pareggio", 250, 50);
+						if(contB>contN) g.drawString("Vince il Bianco", 250, 60);
+						if(contN>contB) g.drawString("Vince il Nero", 250, 60);
+						if(contB==contN) g.drawString("Pareggio", 250, 60);
 						removeMouseListener(this);
 						g.drawString("Premi R per fare una nuova partita", 125, 750);
 					}
@@ -448,7 +451,7 @@ public class Reversi extends JPanel implements MouseListener, KeyListener{
 					System.out.println("Partita finita, nessuno dei due può muoversi");
 				}
 			}
-			
+			if(player==1) {
 			thinking = true;
 			
 			//ridisegna sul canvas
@@ -460,6 +463,7 @@ public class Reversi extends JPanel implements MouseListener, KeyListener{
 				executeIA();
 			}catch(Exception e) {
 				e.printStackTrace();
+				}
 			}
 		}
 	}
@@ -485,6 +489,10 @@ public class Reversi extends JPanel implements MouseListener, KeyListener{
 				player=2;
 				celleValide(player);
 				repaint();
+			
+		}
+		if(e.getKeyCode()==KeyEvent.VK_ESCAPE) {
+			Main m=new Main();
 			
 		}
 		
@@ -545,7 +553,11 @@ public class Reversi extends JPanel implements MouseListener, KeyListener{
 				Thread.sleep(500);
 				
 				InputProgram facts = new ASPInputProgram();
+<<<<<<< HEAD
 				facts.addFilesPath("encodings/medium");
+=======
+				facts.addFilesPath(settings);
+>>>>>>> branch 'master' of https://github.com/KoiKomei/IAReversi.git
 				for (int i = 0; i < griglia.length; i++) {
 					for(int j = 0; j < griglia[0].length; j++) {
 						Cell cella = new Cell(i , j, griglia[i][j]);
