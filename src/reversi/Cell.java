@@ -10,10 +10,14 @@ public class Cell {
 	@Param(1)
 	private int y;
 	
-	public Cell(int _x, int _y) {
+	@Param(2)
+	private int value;
+	
+	public Cell(int _x, int _y, int _value) {
 		
 		x = _x;
 		y = _y;
+		value = _value;
 		
 	}
 	
@@ -35,6 +39,14 @@ public class Cell {
 
 	public void setY(int y) {
 		this.y = y;
+	}
+	
+	public int getValue() {
+		return value;
+	}
+	
+	public void setValue(int value) {
+		this.value = value;
 	}
 
 }

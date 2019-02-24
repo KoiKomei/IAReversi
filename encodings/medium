@@ -1,3 +1,211 @@
-place(X,Y) | dontplace(X,Y) :- cell(X,Y).
+% il numero di righe e di colonne della matrice
+rigaOcolonna(1..8).
 
-answer(X,Y) :- place(X,Y).
+% posizioni gia' presenti delle pedine nella matrice
+pedinaPresente(riga, colonna, valore) :- cell(riga, colonna, valore), valore != 0, valore != 3.
+
+% colore pedina del computer
+coloreComputer(1).
+
+% mosse valide
+mossaValida(X,Y) :- cell(X,Y,3).
+
+% guess posizioneScelta indica la posizione scelta dal computer, posizione non scelta tutte le altre possibili
+posizioneScelta(X, Y) | posizioneNonScelta(X, Y) :- mossaValida(X, Y).
+
+% check ci deve essere un solo atomo di posizioneScelta
+:- #count{X, Y : posizioneScelta(X, Y)} > 1.
+:- #count{X, Y : posizioneScelta(X, Y)} < 1.
+
+% output
+answer(X,Y) :- posizioneScelta(X,Y).
+
+
+
+
+%INFORMAZIONI DERIVATE AGGIUNTIVE
+
+
+
+% colore pedina del'avversario
+coloreAvversario(2).
+
+% posizioni occupate
+posizioneOccupata(Riga, Colonna) :- pedinaPresente(Riga, Colonna, _).
+
+% posizioni non occupate
+posizioneNonOccupata(Riga, Colonna) :- not posizioneOccupata(Riga,Colonna), rigaOcolonna(Riga), rigaOcolonna(Colonna).
+
+% se la posizione selezionata e' sulla stessa riga, colonna o diagonale di un altra pedina del computer e se mangia almeno una pedina e se non contiene gia' un'altra pedina
+
+posizioneValida(Riga, Colonna) :- posizioneNonOccupata(Riga,Colonna), pedinaPresente(Riga, ColonnaComputer, C), coloreComputer(C), pedinaPresente(Riga, ColonnaAvversario, Ca), coloreAvversario(Ca), Colonna < ColonnaComputer, Colonna = ColonnaAvversario - 1, not bucoPerRigaP(Riga, Colonna, ColonnaComputer).
+posizioneValida(Riga, Colonna) :- posizioneNonOccupata(Riga,Colonna), pedinaPresente(Riga, ColonnaComputer, C), coloreComputer(C), pedinaPresente(Riga, ColonnaAvversario, Ca), coloreAvversario(Ca), Colonna > ColonnaComputer, Colonna = ColonnaAvversario + 1, not bucoPerRigaD(Riga, Colonna, ColonnaComputer).
+posizioneValida(Riga, Colonna) :- posizioneNonOccupata(Riga,Colonna), pedinaPresente(RigaComputer, Colonna, C), coloreComputer(C), pedinaPresente(RigaAvversario, Colonna, Ca), coloreAvversario(Ca), Riga < RigaComputer, Riga = RigaAvversario - 1, not bucoPerColonnaP(Colonna, Riga, RigaComputer).
+posizioneValida(Riga, Colonna) :- posizioneNonOccupata(Riga,Colonna), pedinaPresente(RigaComputer, Colonna, C), coloreComputer(C), pedinaPresente(RigaAvversario, Colonna, Ca), coloreAvversario(Ca), Riga > RigaComputer, Riga = RigaAvversario + 1, not bucoPerColonnaD(Colonna, Riga, RigaComputer).
+posizioneValida(Riga, Colonna) :- posizioneNonOccupata(Riga,Colonna), pedinaPresente(Riga2, Colonna2, C), coloreComputer(C), sullaStessaDiagonale(Riga, Colonna, Riga2, Colonna2).
+
+% secondo punto in alto a sinistra del primo punto
+sullaStessaDiagonale(Riga1, Colonna1, Riga2, Colonna2) :- pedinaPresente(Riga2, Colonna2, C), coloreComputer(C), Riga1 = Riga2 + K, Colonna1 = Colonna2 + K, rigaOcolonna(K), rigaOcolonna(Riga1), rigaOcolonna(Colonna1), pedinaPresente(RigaAvversario, ColonnaAvversario, Ca), coloreAvversario(Ca), RigaAvversario = Riga1 - 1, ColonnaAvversario = Colonna1 - 1, not bucoPerDiagonaleAS(Riga1, Colonna1, Riga2, Colonna2).
+% secondo punto in alto a destra del primo punto
+sullaStessaDiagonale(Riga1, Colonna1, Riga2, Colonna2) :- pedinaPresente(Riga2, Colonna2, C), coloreComputer(C), Riga1 = Riga2 + K, Colonna1 = Colonna2 - K, rigaOcolonna(K), rigaOcolonna(Riga1), rigaOcolonna(Colonna1), pedinaPresente(RigaAvversario, ColonnaAvversario, Ca), coloreAvversario(Ca), RigaAvversario = Riga1 - 1, ColonnaAvversario = Colonna1 + 1, not bucoPerDiagonaleAD(Riga1, Colonna1, Riga2, Colonna2).
+% secondo punto in basso a sinistra del primo punto
+sullaStessaDiagonale(Riga1, Colonna1, Riga2, Colonna2) :- pedinaPresente(Riga2, Colonna2, C), coloreComputer(C), Riga1 = Riga2 - K, Colonna1 = Colonna2 + K, rigaOcolonna(K), rigaOcolonna(Riga1), rigaOcolonna(Colonna1), pedinaPresente(RigaAvversario, ColonnaAvversario, Ca), coloreAvversario(Ca), RigaAvversario = Riga1 + 1, ColonnaAvversario = Colonna1 - 1, not bucoPerDiagonaleBS(Riga1, Colonna1, Riga2, Colonna2).
+% secondo punto in basso a destra del primo punto
+sullaStessaDiagonale(Riga1, Colonna1, Riga2, Colonna2) :- pedinaPresente(Riga2, Colonna2, C), coloreComputer(C), Riga1 = Riga2 - K, Colonna1 = Colonna2 - K, rigaOcolonna(K), rigaOcolonna(Riga1), rigaOcolonna(Colonna1), pedinaPresente(RigaAvversario, ColonnaAvversario, Ca), coloreAvversario(Ca), RigaAvversario = Riga1 + 1, ColonnaAvversario = Colonna1 + 1, not bucoPerDiagonaleBD(Riga1, Colonna1, Riga2, Colonna2).
+
+
+%controlla se c'è un buco tra le pedine la prima e' sempre quella dove dovra' essere inserita la pedina e la seconda e' sempre una gia' del computer
+
+bucoPerRigaP(Riga, Colonna1, Colonna2) :- pedinaPresente(Riga, Colonna2, C), coloreComputer(C), posizioneNonOccupata(Riga,Colonna3), Colonna3 > Colonna1, Colonna3 < Colonna2, rigaOcolonna(Colonna1).
+bucoPerRigaD(Riga, Colonna1, Colonna2) :- pedinaPresente(Riga, Colonna2, C), coloreComputer(C), posizioneNonOccupata(Riga,Colonna3), Colonna3 < Colonna1, Colonna3 > Colonna2, rigaOcolonna(Colonna1).
+
+bucoPerColonnaP(Colonna, Riga1, Riga2) :- pedinaPresente(Riga2, Colonna, C), coloreComputer(C), posizioneNonOccupata(Riga3,Colonna), Riga3 > Riga1, Riga3 < Riga2, rigaOcolonna(Riga1).
+bucoPerColonnaD(Colonna, Riga1, Riga2) :- pedinaPresente(Riga2, Colonna, C), coloreComputer(C), posizioneNonOccupata(Riga3,Colonna), Riga3 < Riga1, Riga3 > Riga2, rigaOcolonna(Riga1).
+
+% secondo punto in alto a sinistra del primo punto
+bucoPerDiagonaleAS(Riga1, Colonna1, Riga2, Colonna2) :- pedinaPresente(Riga2, Colonna2, C), coloreComputer(C), posizioneNonOccupata(Riga3,Colonna3), Riga1 = Riga3 + K1, Colonna1 = Colonna3 + K1, Riga2 = Riga3 - K2, Colonna2 = Colonna3 - K2, rigaOcolonna(K1), rigaOcolonna(K2), rigaOcolonna(Riga1), rigaOcolonna(Colonna1).
+% secondo punto in alto a destra del primo punto
+bucoPerDiagonaleAD(Riga1, Colonna1, Riga2, Colonna2) :- pedinaPresente(Riga2, Colonna2, C), coloreComputer(C), posizioneNonOccupata(Riga3,Colonna3), Riga1 = Riga3 + K1, Colonna1 = Colonna3 - K1, Riga2 = Riga3 - K2, Colonna2 = Colonna3 + K2, rigaOcolonna(K1), rigaOcolonna(K2), rigaOcolonna(Riga1), rigaOcolonna(Colonna1).
+% secondo punto in basso a sinistra del primo punto
+bucoPerDiagonaleBS(Riga1, Colonna1, Riga2, Colonna2) :- pedinaPresente(Riga2, Colonna2, C), coloreComputer(C), posizioneNonOccupata(Riga3,Colonna3), Riga1 = Riga3 - K1, Colonna1 = Colonna3 + K1, Riga2 = Riga3 + K2, Colonna2 = Colonna3 - K2, rigaOcolonna(K1), rigaOcolonna(K2), rigaOcolonna(Riga1), rigaOcolonna(Colonna1).
+% secondo punto in basso a destra del primo punto
+bucoPerDiagonaleBD(Riga1, Colonna1, Riga2, Colonna2) :- pedinaPresente(Riga2, Colonna2, C), coloreComputer(C), posizioneNonOccupata(Riga3,Colonna3), Riga1 = Riga3 - K1, Colonna1 = Colonna3 - K1, Riga2 = Riga3 + K2, Colonna2 = Colonna3 + K2, rigaOcolonna(K1), rigaOcolonna(K2), rigaOcolonna(Riga1), rigaOcolonna(Colonna1).
+
+
+
+%STRATEGIA ANGOLI E PEDINE STABILI
+
+
+rigaConPedina(R) :- pedinaPresente(R, _, _).
+colonnaConPedina(C) :- pedinaPresente(_, C, _).
+rigaSenzaPedine(R) :- rigaOcolonna(R), not rigaConPedina(R).
+colonnaSenzaPedine(C) :- rigaOcolonna(C), not colonnaConPedina(C).
+
+%conta quanti avversari ci sono sulla riga 1 e 8
+contaAvversariRiga(Quanti, 1):- #count{C : pedinaPresente(1, C, Ca), coloreAvversario(Ca)} = Quanti, rigaOcolonna(Quanti).
+contaAvversariRiga(Quanti, 8):- #count{C : pedinaPresente(8, C, Ca), coloreAvversario(Ca)} = Quanti, rigaOcolonna(Quanti).
+
+%conta quanti avversari ci sono sulla colonna 1 e 8
+contaAvversariColonna(Quanti, 1):- #count{R : pedinaPresente(R, 1, Ca), coloreAvversario(Ca)} = Quanti, rigaOcolonna(Quanti).
+contaAvversariColonna(Quanti, 8):- #count{R : pedinaPresente(R, 8, Ca), coloreAvversario(Ca)} = Quanti, rigaOcolonna(Quanti).
+
+% se la posizioneScelta e' sul bordo (e' sulla prima/ultima riga/colonna)
+posizioneSceltaSulBordo :- posizioneScelta(1, Colonna).
+posizioneSceltaSulBordo :- posizioneScelta(8, Colonna).
+posizioneSceltaSulBordo :- posizioneScelta(Riga, 1).
+posizioneSceltaSulBordo :- posizioneScelta(Riga, 8).
+
+% se c'e' un angolo da poter scegliere e lui non lo sceglie
+:~ posizioneNonScelta(Riga, Colonna), pedinaAngolo(Riga, Colonna). [1:15]
+
+% se lui sceglie una posizione che mangia anche una pedina in posizione X oppure sceglie la posizione X e l'angolo non e' stato ancora preso
+:~ posizioneScelta(Riga, Colonna), traSullaStessaRiga(Riga, Colonna, Colonna2, ColonnaR), pedinaPresente(Riga, Colonna2, C), coloreComputer(C), pedinaStabile(Riga, ColonnaR, 16), pedinaAngoloDiQuestaX(Riga, ColonnaR, RigaA, ColonnaA), posizioneNonOccupata(RigaA, ColonnaA). [4:13]
+:~ posizioneScelta(Riga, Colonna), traSullaStessaColonna(Riga, Riga2, Colonna, RigaR), pedinaPresente(Riga2, Colonna, C), coloreComputer(C), pedinaStabile(RigaR, Colonna, 16), pedinaAngoloDiQuestaX(RigaR, Colonna, RigaA, ColonnaA), posizioneNonOccupata(RigaA, ColonnaA). [4:13]
+:~ posizioneScelta(Riga, Colonna), traSullaStessaDiagonale(Riga, Colonna, Riga2, Colonna2, RigaR, ColonnaR), pedinaPresente(Riga2, Colonna2, C), coloreComputer(C), pedinaStabile(RigaR, ColonnaR, 16), pedinaAngoloDiQuestaX(RigaR, ColonnaR, RigaA, ColonnaA), posizioneNonOccupata(RigaA, ColonnaA). [4:13]
+:~ posizioneScelta(Riga, Colonna), pedinaStabile(Riga, Colonna, 16), pedinaAngoloDiQuestaX(Riga, Colonna, RigaA, ColonnaA), posizioneNonOccupata(RigaA, ColonnaA). [4:13]
+
+pedinaAngoloDiQuestaX(2, 2, 1, 1).
+pedinaAngoloDiQuestaX(2, 7, 1, 8).
+pedinaAngoloDiQuestaX(7, 2, 8, 1).
+pedinaAngoloDiQuestaX(7, 7, 8, 8).
+
+% se può mangiare tutto su una riga /colonna pari a 1/8 e non lo fa , 
+% ha priorità maggiore rispetto al mettere una prima pedina sul bordo perchè deve mangiare altrimenti verrà mangiato
+:~ posizioneScelta(Riga, Colonna), Riga <> 1, Riga <> 8, Colonna <> 1, Colonna <> 8. [1:12]
+:~ posizioneScelta(1, Colonna), contaAvversariRiga(QuantiAvv, 1), quanti_ne_mangia_riga(QuantiMangiati), QuantiMangiati > 0, QuantiMangiati <> QuantiAvv. [2:12]
+:~ posizioneScelta(8, Colonna), contaAvversariRiga(QuantiAvv, 8), quanti_ne_mangia_riga(QuantiMangiati), QuantiMangiati > 0, QuantiMangiati <> QuantiAvv. [2:12]
+:~ posizioneScelta(Riga, 1), contaAvversariColonna(QuantiAvv, 1), quanti_ne_mangia_colonna(QuantiMangiati), QuantiMangiati > 0, QuantiMangiati <> QuantiAvv. [2:12]
+:~ posizioneScelta(Riga, 8), contaAvversariColonna(QuantiAvv, 8), quanti_ne_mangia_colonna(QuantiMangiati), QuantiMangiati > 0, QuantiMangiati <> QuantiAvv. [2:12]
+:~ posizioneScelta(1, Colonna), contaAvversariRiga(QuantiAvv, 1), quanti_ne_mangia_riga(QuantiMangiati), QuantiMangiati = 0, QuantiAvv > 0. [2:12]
+:~ posizioneScelta(8, Colonna), contaAvversariRiga(QuantiAvv, 8), quanti_ne_mangia_riga(QuantiMangiati), QuantiMangiati = 0, QuantiAvv > 0. [2:12]
+:~ posizioneScelta(Riga, 1), contaAvversariColonna(QuantiAvv, 1), quanti_ne_mangia_colonna(QuantiMangiati), QuantiMangiati = 0, QuantiAvv > 0. [2:12]
+:~ posizioneScelta(Riga, 8), contaAvversariColonna(QuantiAvv, 8), quanti_ne_mangia_colonna(QuantiMangiati), QuantiMangiati = 0, QuantiAvv > 0. [2:12]
+:~ posizioneScelta(Riga, 1), contaAvversariColonna(0, 1). [1:12]
+:~ posizioneScelta(Riga, 8), contaAvversariColonna(0, 8). [1:12]
+:~ posizioneScelta(1, Colonna), contaAvversariRiga(0, 1). [1:12]
+:~ posizioneScelta(8, Colonna), contaAvversariRiga(0, 8). [1:12]
+
+% se vuole mettere in una posizione ad un bordo ma lascia un buco
+:~ posizioneScelta(Riga, 1), Riga2 = Riga + 2, pedinaPresente(Riga2, 1, C), coloreComputer(C), Riga1 = Riga + 1, posizioneNonOccupata(Riga1, 1). [2:10]
+:~ posizioneScelta(Riga, 1), Riga = Riga2 + 2, pedinaPresente(Riga2, 1, C), coloreComputer(C), Riga = Riga1 + 1, posizioneNonOccupata(Riga1, 1). [2:10]
+:~ posizioneScelta(Riga, 8), Riga2 = Riga + 2, pedinaPresente(Riga2, 8, C), coloreComputer(C), Riga1 = Riga + 1, posizioneNonOccupata(Riga1, 8). [2:10]
+:~ posizioneScelta(Riga, 8), Riga = Riga2 + 2, pedinaPresente(Riga2, 8, C), coloreComputer(C), Riga = Riga1 + 1, posizioneNonOccupata(Riga1, 8). [2:10]
+:~ posizioneScelta(1, Colonna), Colonna2 = Colonna + 2, pedinaPresente(1, Colonna2, C), coloreComputer(C), Colonna1 = Colonna + 1, posizioneNonOccupata(1, Colonna1). [2:10]
+:~ posizioneScelta(1, Colonna), Colonna = Colonna2 + 2, pedinaPresente(1, Colonna2, C), coloreComputer(C), Colonna = Colonna1 + 1, posizioneNonOccupata(1, Colonna1). [2:10]
+:~ posizioneScelta(8, Colonna), Colonna2 = Colonna + 2, pedinaPresente(8, Colonna2, C), coloreComputer(C), Colonna1 = Colonna + 1, posizioneNonOccupata(8, Colonna1). [2:10]
+:~ posizioneScelta(8, Colonna), Colonna = Colonna2 + 2, pedinaPresente(8, Colonna2, C), coloreComputer(C), Colonna = Colonna1 + 1, posizioneNonOccupata(8, Colonna1). [2:10]
+
+% se può mettere in una posizione ad un bordo e non ci sono pedine in quel bordo
+:~ posizioneNonScelta(_, 1), colonnaSenzaPedine(1). [1:10]
+:~ posizioneNonScelta(_, 8), colonnaSenzaPedine(8). [1:10]
+:~ posizioneNonScelta(1, _), rigaSenzaPedine(1). [1:10]
+:~ posizioneNonScelta(8, _), rigaSenzaPedine(8). [1:10]
+
+% se può mettere in una posizione ad un bordo e non ci sono pedine in quel bordo vicino a lui (che quindi lo possono mangiare)
+:~ posizioneNonScelta(Riga, 1), RigaB = Riga + 1, nonPedinaAvversario(RigaB, 1), Riga = RigaA + 1, nonPedinaAvversario(RigaA, 1). [1:6]
+:~ posizioneNonScelta(Riga, 8), RigaB = Riga + 1, nonPedinaAvversario(RigaB, 8), Riga = RigaA + 1, nonPedinaAvversario(RigaA, 8). [1:6]
+:~ posizioneNonScelta(1, Colonna), ColonnaD = Colonna + 1, nonPedinaAvversario(1, ColonnaD), Colonna = ColonnaS + 1, nonPedinaAvversario(1, ColonnaS). [1:6]
+:~ posizioneNonScelta(8, Colonna), ColonnaD = Colonna + 1, nonPedinaAvversario(8, ColonnaD), Colonna = ColonnaS + 1, nonPedinaAvversario(8, ColonnaS). [1:6]
+
+nonPedinaAvversario(Riga, Colonna) :- posizioneNonOccupata(Riga, Colonna).
+nonPedinaAvversario(Riga, Colonna) :- pedinaPresente(Riga, Colonna, C), coloreComputer(C).
+
+% se può mettere in una posizione ad un bordo ed in quel bordo sia subito alla sua sinistra che subito alla sua destra c'è' l'avversario
+:~ posizioneNonScelta(Riga, 1), RigaB = Riga + 1, pedinaPresente(RigaB, 1, Ca), Riga = RigaA + 1, pedinaPresente(RigaA, 1, Ca), coloreAvversario(Ca). [1:6]
+:~ posizioneNonScelta(Riga, 8), RigaB = Riga + 1, pedinaPresente(RigaB, 8, Ca), Riga = RigaA + 1, pedinaPresente(RigaA, 8, Ca), coloreAvversario(Ca). [1:6]
+:~ posizioneNonScelta(1, Colonna), ColonnaD = Colonna + 1, pedinaPresente(1, ColonnaD, Ca), Colonna = ColonnaS + 1, pedinaPresente(1, ColonnaS, Ca), coloreAvversario(Ca). [1:6]
+:~ posizioneNonScelta(8, Colonna), ColonnaD = Colonna + 1, pedinaPresente(8, ColonnaD, Ca), Colonna = ColonnaS + 1, pedinaPresente(8, ColonnaS, Ca), coloreAvversario(Ca). [1:6]
+
+% se sceglie una posizione "pessima"
+:~ posizioneScelta(Riga, Colonna), pedinaStabile(Riga, Colonna, Peso), Peso != 16. [Peso:4]
+
+% se non ci sono pedine in un bordo lui non deve mettere nelle celle subito prima del bordo
+% perche' altrimenti permetterebbe all'avversario di mettere per primo una pedina sul bordo
+:~ colonnaSenzaPedine(1), posizioneScelta(_, 2). [1:4]
+:~ colonnaSenzaPedine(8), posizioneScelta(_, 7). [1:4]
+:~ rigaSenzaPedine(1), posizioneScelta(2, _). [1:4]
+:~ rigaSenzaPedine(8), posizioneScelta(7, _). [1:4]
+
+%le pedinaStabile rappresentano la posizione di una pedina stabile e il peso annesso alla sua tipologia = tipo : peso    A : 2 , B : 4 , C : 8 , X : 16
+
+%tipo A
+pedinaStabile(3,1,2).
+pedinaStabile(6,1,2).
+pedinaStabile(1,3,2).
+pedinaStabile(1,6,2).
+pedinaStabile(3,8,2).
+pedinaStabile(6,8,2).
+pedinaStabile(8,3,2).
+pedinaStabile(8,6,2).
+
+%tipo B
+pedinaStabile(4,1,4).
+pedinaStabile(5,1,4).
+pedinaStabile(1,4,4).
+pedinaStabile(1,5,4).
+pedinaStabile(4,8,4).
+pedinaStabile(5,8,4).
+pedinaStabile(8,4,4).
+pedinaStabile(8,5,4).
+
+%tipo C
+pedinaStabile(2,1,8).
+pedinaStabile(7,1,8).
+pedinaStabile(1,2,8).
+pedinaStabile(1,7,8).
+pedinaStabile(2,8,8).
+pedinaStabile(7,8,8).
+pedinaStabile(8,2,8).
+pedinaStabile(8,7,8).
+
+%tipo X
+pedinaStabile(2,2,16).
+pedinaStabile(2,7,16).
+pedinaStabile(7,2,16).
+pedinaStabile(7,7,16).
+
+%pedine negli angoli
+pedinaAngolo(1,1).
+pedinaAngolo(1,8).
+pedinaAngolo(8,1).
+pedinaAngolo(8,8).

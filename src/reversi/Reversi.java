@@ -540,20 +540,16 @@ public class Reversi extends JPanel implements MouseListener, KeyListener{
 		
 			handler = new DesktopHandler(new DLVDesktopService("lib/dlv.mingw.exe"));
 	
-			
-			
 			try {
 				
 				Thread.sleep(500);
 				
 				InputProgram facts = new ASPInputProgram();
-				facts.addFilesPath("encodings/easy");
+				facts.addFilesPath("encodings/medium");
 				for (int i = 0; i < griglia.length; i++) {
 					for(int j = 0; j < griglia[0].length; j++) {
-						if (griglia[i][j] == 3) {
-							Cell cella = new Cell(i , j);
-							facts.addObjectInput(cella);
-						}
+						Cell cella = new Cell(i , j, griglia[i][j]);
+						facts.addObjectInput(cella);
 					}
 				}
 				
