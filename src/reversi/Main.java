@@ -8,6 +8,10 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
+import java.awt.Component;
+import java.awt.Font;
+import java.awt.Graphics2D;
+
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -22,8 +26,8 @@ public class Main {
 	JPanel panelContainer= new JPanel();
 	JPanel menu= new JPanel();
 	Reversi facile=new Reversi("encodings/easy");
-	Reversi normale=new Reversi("encodings/easy");
-	Reversi difficile=new Reversi("encodings/easy");
+	Reversi normale=new Reversi("encodings/medium");
+	Reversi difficile=new Reversi("encodings/hard");
 	
 	JButton easy=new JButton("Facile");
 	JButton medium=new JButton("Normale");
@@ -91,6 +95,9 @@ public class Main {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				facile.restart();
+				
+			
 				container.show(panelContainer, "1");
 				jframe.pack();
 				
@@ -101,6 +108,7 @@ public class Main {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				normale.restart();
 				container.show(panelContainer, "1");
 				jframe.pack();
 				
@@ -111,6 +119,7 @@ public class Main {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				difficile.restart();
 				container.show(panelContainer, "1");
 				jframe.pack();
 				
