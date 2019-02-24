@@ -457,7 +457,7 @@ public class Reversi extends JPanel implements MouseListener, KeyListener{
 					System.out.println("Partita finita, nessuno dei due può muoversi");
 				}
 			}
-			
+			if(player==1) {
 			thinking = true;
 			
 			//ridisegna sul canvas
@@ -470,7 +470,26 @@ public class Reversi extends JPanel implements MouseListener, KeyListener{
 			}catch(Exception e) {
 				e.printStackTrace();
 			}
+			}
 		}
+	}
+	
+	public void restart() {
+		addMouseListener(this);
+		for(int i=0; i<griglia.length; i++) {
+			for(int j=0; j<griglia[0].length; j++) {
+				griglia[i][j]=0;				
+			}
+			
+		}
+		griglia[3][3]=1;
+		griglia[4][4]=1;
+		griglia[3][4]=2;
+		griglia[4][3]=2;
+		player=2;
+		celleValide(player);
+		repaint();
+		
 	}
 	
 	//gestisce solo il reset
@@ -478,22 +497,8 @@ public class Reversi extends JPanel implements MouseListener, KeyListener{
 	public void keyReleased(KeyEvent e) {
 		if(e.getKeyCode()==KeyEvent.VK_R) {
 			System.out.println(partitaFinita());
-			
 				System.out.println(partitaFinita());
-				addMouseListener(this);
-				for(int i=0; i<griglia.length; i++) {
-					for(int j=0; j<griglia[0].length; j++) {
-						griglia[i][j]=0;				
-					}
-					
-				}
-				griglia[3][3]=1;
-				griglia[4][4]=1;
-				griglia[3][4]=2;
-				griglia[4][3]=2;
-				player=2;
-				celleValide(player);
-				repaint();
+				restart();
 			
 		}
 		if(e.getKeyCode()==KeyEvent.VK_ESCAPE) {
@@ -555,7 +560,7 @@ public class Reversi extends JPanel implements MouseListener, KeyListener{
 	
 			try {
 				
-				Thread.sleep(500);
+				Thread.sleep(5000);
 				
 				InputProgram facts = new ASPInputProgram();
 				facts.addFilesPath(settings);
