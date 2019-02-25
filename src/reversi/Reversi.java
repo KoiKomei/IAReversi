@@ -452,24 +452,26 @@ public class Reversi extends JPanel implements MouseListener, KeyListener{
 				else {
 					player=2;
 					System.out.println("Tocca al giocatore Nero perché il Bianco non ha mosse");
+					repaint();
+					
 				}
 				if(!celleValide(player)) {
 					System.out.println("Partita finita, nessuno dei due può muoversi");
 				}
 			}
-			if(player==1) {
-			thinking = true;
+			if(player==1 && partitaFinita()==0) {
+				thinking = true;
 			
-			//ridisegna sul canvas
-			repaint();
+				//ridisegna sul canvas
+				repaint();
 			
-			try {
+				try {
 //				Thread.sleep(2000);
 //				System.out.println("sleep finito");
-				executeIA();
-			}catch(Exception e) {
-				e.printStackTrace();
-			}
+					executeIA();
+				}catch(Exception e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}
@@ -557,10 +559,10 @@ public class Reversi extends JPanel implements MouseListener, KeyListener{
 		public void run() {
 		
 			handler = new DesktopHandler(new DLVDesktopService("lib/dlv.mingw.exe"));
-	
+			if(partitaFinita()==0) {
 			try {
 				
-				Thread.sleep(5000);
+				Thread.sleep(500);
 				
 				InputProgram facts = new ASPInputProgram();
 				facts.addFilesPath(settings);
@@ -643,12 +645,13 @@ public class Reversi extends JPanel implements MouseListener, KeyListener{
 				else {
 					player=2;
 					System.out.println("Tocca al giocatore Nero perché il Bianco non ha mosse");
+					repaint();
 				}
 				if(!celleValide(player)) {
 					System.out.println("Partita finita, nessuno dei due può muoversi");
 				}
+				}
 			}
-			
 			thinking = false;
 			
 			//ridisegna sul canvas
