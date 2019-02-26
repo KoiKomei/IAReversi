@@ -27,7 +27,7 @@ public class Main {
 	JPanel menu= new JPanel();
 	Reversi facile=new Reversi("encodings/easy");
 	Reversi normale=new Reversi("encodings/medium");
-	Reversi difficile=new Reversi("encodings/hard");
+	Reversi difficile=new Reversi("encodings/easymode");
 	
 	JButton easy=new JButton("Facile");
 	JButton medium=new JButton("Normale");

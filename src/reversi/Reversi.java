@@ -649,6 +649,7 @@ public class Reversi extends JPanel implements MouseListener, KeyListener{
 				}
 				if(!celleValide(player)) {
 					System.out.println("Partita finita, nessuno dei due può muoversi");
+					repaint();
 				}
 				}
 			}

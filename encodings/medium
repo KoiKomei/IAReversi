@@ -1,4 +1,16 @@
-%STRATEGIA ANGOLI E PEDINE STABILI
+%GUESS AND CHECK
+
+% mosse valide
+mossaValida(X,Y) :- cell(X,Y,3).
+
+% Guess posizioneScelta indica la posizione scelta dal computer, posizione non scelta tutte le altre possibili
+posizioneScelta(X,Y) | posizioneNonScelta(X,Y) :- mossaValida(X,Y).
+
+% Check ci deve essere un solo atomo ground di posizioneScelta
+:- not #count{X,Y: posizioneScelta(X,Y)}=1.
+
+% Output
+answer(X,Y) :- posizioneScelta(X,Y).
 
 %pedine negli angoli
 pedinaAngolo(0,0).
@@ -6,7 +18,20 @@ pedinaAngolo(0,7).
 pedinaAngolo(7,0).
 pedinaAngolo(7,7).
 
-%le pedinaStabile rappresentano la posizione di una pedina stabile e il peso annesso alla sua tipologia = tipo : peso    A : 2 , B : 4 , C : 8 , X : 16
+%Delle pedine possono diventare stabili come quelle agli angoli in caso se ne ottengano diverse e sono pedine importanti perché se scelte bene
+%fanno in modo che l'avversario non possa prendere gli angoli che sono caselle importantissime
+%esistono 4 tipi di queste pedine, A, B, C ed X
+%_________________
+%|0 C A B B A C 0|
+%|C X		  X C|
+%|A			    A|
+%|B			    B|
+%|B			    B|
+%|A			    A|
+%|C X		  X C|
+%|0 C A B B A C 0|
+%-----------------
+%Abbiamo deciso di dargli un peso con una potenza di 2, 2 per il migliore, 16 per il peggiore
 
 %tipo A
 pedinaStabile(2,0,2).
@@ -51,34 +76,3 @@ pedinaStabile(6,6,16).
 :~ posizioneScelta(Riga, Colonna), pedinaStabile(Riga, Colonna, Peso). [Peso : 4]
 
 
-%GUESS AND CHECK
-
-% il numero di righe e di colonne della matrice
-rigaOcolonna(0..7).
-
-% posizioni gia' presenti delle pedine nella matrice
-pedinaPresente(Riga, Colonna, Valore) :- cell(Riga, Colonna, Valore), Valore != 0, Valore != 3.
-
-% posizioni occupate
-posizioneOccupata(Riga, Colonna) :- pedinaPresente(Riga, Colonna, _).
-
-% posizioni non occupate
-posizioneNonOccupata(Riga, Colonna) :- not posizioneOccupata(Riga,Colonna), rigaOcolonna(Riga), rigaOcolonna(Colonna).
-
-% colore pedina del computer
-coloreComputer(1).
-
-% colore pedina del'avversario
-coloreAvversario(2).
-
-% mosse valide
-mossaValida(X,Y) :- cell(X,Y,3).
-
-% Guess posizioneScelta indica la posizione scelta dal computer, posizione non scelta tutte le altre possibili
-posizioneScelta(X,Y) | posizioneNonScelta(X,Y) :- mossaValida(X,Y).
-
-% Check ci deve essere un solo atomo ground di posizioneScelta
-:- not #count{X,Y: posizioneScelta(X,Y)}=1.
-
-% Output
-answer(X,Y) :- posizioneScelta(X,Y).
