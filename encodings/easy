@@ -1,13 +1,10 @@
-% posizioni gia' presenti delle pedine nella matrice
-casellaOccupata(X, Y, Valore) :- cell(X, Y, Valore), Valore != 0, Valore != 3.
-
 % mosse valide
 mossaValida(X,Y) :- cell(X,Y,3).
 
-% Guess posizioneScelta indica la posizione scelta dal computer, posizione non scelta tutte le altre possibili
+% posizionescelta e non, si spiega da solo
 posizioneScelta(X,Y) | posizioneNonScelta(X,Y) :- mossaValida(X,Y).
 
-% Check ci deve essere un solo atomo ground di posizioneScelta
+% Ovviamente si può scegliere solo una soluzione
 :- not #count{X,Y: posizioneScelta(X,Y)}=1.
 
 % Output

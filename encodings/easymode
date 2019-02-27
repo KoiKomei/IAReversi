@@ -3,16 +3,16 @@
 % il numero di righe e di colonne della matrice
 rigaOcolonna(0..7).
 
-% posizioni gia' presenti delle pedine nella matrice
+% tutte le caselle occupate 
 casellaOccupata(X, Y, Valore) :- cell(X, Y, Valore), Valore != 0, Valore != 3.
 
 % mosse valide
 mossaValida(X,Y) :- cell(X,Y,3).
 
-% Guess posizioneScelta indica la posizione scelta dal computer, posizione non scelta tutte le altre possibili
+% posizionescelta e non, si spiega da solo
 posizioneScelta(X,Y) | posizioneNonScelta(X,Y) :- mossaValida(X,Y).
 
-% Check ci deve essere un solo atomo ground di posizioneScelta
+% Ovviamente si può scegliere solo una soluzione
 :- not #count{X,Y: posizioneScelta(X,Y)}=1.
 
 % Output
@@ -64,7 +64,7 @@ pedinaStabile(1,6,16).
 pedinaStabile(6,1,16).
 pedinaStabile(6,6,16).
 
-% In caso c'è un angolo e non lo sceglie
+% In caso ci sia un angolo e non lo sceglie
 :~ posizioneNonScelta(Riga, Colonna), pedinaAngolo(Riga, Colonna). [1:15]
 
 % Decisione riguardo se prendere una tipologia di pedinastabile decisa sopra
@@ -74,6 +74,8 @@ pedinaStabile(6,6,16).
 
 %inizio pedine di frontiera e muri
 
+
+%data la struttura del nostro reversi, ci siamo dovuti ricalcolare tutta la matrice
 %controllo delle pedine per vedere quali sono vuote od occupate proprio dal colore della CPU
 
 casellaInutileSinistra(X, Y1, Y2) :- casellaOccupata(X, Y2, 1), mossaValida(X, Y3), Y3 > Y1, Y3 < Y2, rigaOcolonna(Y1).
@@ -82,12 +84,10 @@ casellaInutileDestra(X, Y1, Y2) :- casellaOccupata(X, Y2, 1), mossaValida(X, Y3)
 casellaInutileSopra(Y, X1, X2) :- casellaOccupata(X2, Y, 1), mossaValida(X3, Y), X3 > X1, X3 < X2, rigaOcolonna(X1).
 casellaInutileSotto(Y, X1, X2) :- casellaOccupata(X2, Y, 1), mossaValida(X3, Y), X3 < X1, X3 > X2, rigaOcolonna(X1).
 
-
 casellaInutileSinistraSopra(X1, Y1, X2, Y2) :- casellaOccupata(X2, Y2, 1), mossaValida(X3, Y3), X1 = X3 + K1, Y1 = Y3 + K1, X2 = X3 - K2, Y2 = Y3 - K2, rigaOcolonna(K1), rigaOcolonna(K2), rigaOcolonna(X1), rigaOcolonna(Y1).
 casellaInutileDestraSopra(X1, Y1, X2, Y2) :- casellaOccupata(X2, Y2, 1), mossaValida(X3, Y3), X1 = X3 + K1, Y1 = Y3 - K1, X2 = X3 - K2, Y2 = Y3 + K2, rigaOcolonna(K1), rigaOcolonna(K2), rigaOcolonna(X1), rigaOcolonna(Y1).
 casellaInutileSinistraSotto(X1, Y1, X2, Y2) :- casellaOccupata(X2, Y2, 1), mossaValida(X3, Y3), X1 = X3 - K1, Y1 = Y3 + K1, X2 = X3 + K2, Y2 = Y3 - K2, rigaOcolonna(K1), rigaOcolonna(K2), rigaOcolonna(X1), rigaOcolonna(Y1).
 casellaInutileDestraSotto(X1, Y1, X2, Y2) :- casellaOccupata(X2, Y2, 1), mossaValida(X3, Y3), X1 = X3 - K1, Y1 = Y3 - K1, X2 = X3 + K2, Y2 = Y3 + K2, rigaOcolonna(K1), rigaOcolonna(K2), rigaOcolonna(X1), rigaOcolonna(Y1).
-
 
 %ci salviamo le caselle occupate dalla cpu e quelle vuote
 
