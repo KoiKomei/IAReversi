@@ -8,6 +8,8 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
+import java.net.URL;
+
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.Graphics2D;
@@ -15,6 +17,8 @@ import java.awt.Graphics2D;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.FileInputStream;
+import java.io.IOException;
 
 
 
@@ -25,44 +29,60 @@ public class Main {
 	
 	JPanel panelContainer= new JPanel();
 	JPanel menu= new JPanel();
+	Reversi stupid=new Reversi("encodings/stoooopid");
 	Reversi facile=new Reversi("encodings/easy");
 	Reversi normale=new Reversi("encodings/medium");
-	Reversi difficile=new Reversi("encodings/easymode");
+	Reversi difficile=new Reversi("encodings/finalHard");
 	
+	JButton oof=new JButton("Stupido");
 	JButton easy=new JButton("Facile");
 	JButton medium=new JButton("Normale");
 	JButton hard=new JButton("Difficile");
+	JButton back0=new JButton("Menu");
 	JButton back1=new JButton("Menu");
 	JButton back2=new JButton("Menu");
 	JButton back3=new JButton("Menu");
 	
 	CardLayout container=new CardLayout();
 	
-
-	
 	
 	public Main() {
-		
+
 		panelContainer.setLayout(container);
+		menu.add(oof);
 		menu.add(easy);
 		menu.add(medium);
 		menu.add(hard);
+		stupid.add(back0);
 		facile.add(back1);
 		normale.add(back2);
 		difficile.add(back3);
 		panelContainer.add(menu, "1");
-		panelContainer.add(facile, "2");
-		panelContainer.add(normale, "3");
-		panelContainer.add(difficile, "4");
+		panelContainer.add(stupid, "2");
+		panelContainer.add(facile, "3");
+		panelContainer.add(normale, "4");
+		panelContainer.add(difficile, "5");
 	
 		container.show(panelContainer, "1");
+		
+		oof.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				 jframe.setSize(800,800);
+				container.show(panelContainer, "2");
+				
+		
+			}
+	
+		});
 		
 		easy.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {			
 				 jframe.setSize(800,800);
-				container.show(panelContainer, "2");
+				container.show(panelContainer, "3");
 				
 				
 			}
@@ -73,7 +93,7 @@ public class Main {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				 jframe.setSize(800,800);
-				container.show(panelContainer, "3");
+				container.show(panelContainer, "4");
 				
 				
 			}
@@ -84,11 +104,25 @@ public class Main {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				 jframe.setSize(800,800);
-				container.show(panelContainer, "4");
+				container.show(panelContainer, "5");
 				
 		
 			}
 	
+		});
+		
+		back0.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				stupid.restart();
+				
+			
+				container.show(panelContainer, "1");
+				jframe.pack();
+				
+			}
+			
 		});
 		
 		back1.addActionListener(new ActionListener() {
@@ -133,21 +167,11 @@ public class Main {
         jframe.pack();
         jframe.setLocationRelativeTo(null);
         jframe.setVisible(true);
-		
+        
 	
 	}
 	
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		
-		/*JFrame jframe=new JFrame("REVERSI");
-		Reversi r=new Reversi("encodings/easy");
-		jframe.getContentPane().add(r);
-		jframe.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		jframe.setBackground(Color.LIGHT_GRAY);
-        jframe.setSize(800,800);
-        jframe.setLocationRelativeTo(null);
-        jframe.setVisible(true);*/
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {

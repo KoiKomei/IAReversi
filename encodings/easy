@@ -52,8 +52,8 @@ pedinaStabile(1,6,16).
 pedinaStabile(6,1,16).
 pedinaStabile(6,6,16).
 
-%Se c'è un angolo da poter scegliere e lui non lo sceglie MODALITA STUPIDA
-:~ posizioneScelta(Riga, Colonna), pedinaAngolo(Riga, Colonna). [1:15]
+%Se c'è un angolo, è un male [Ragionamento stupido]
+:~ posizioneScelta(Riga, Colonna), pedinaAngolo(Riga, Colonna). [1:7]
 
-% Se sceglie una posizione "pessima" MODALITA STUPIDA
-:~ posizioneNonScelta(Riga, Colonna), pedinaStabile(Riga, Colonna, Peso). [Peso : 4]
+%Se c'è una posizione orribile e non si è scelta [Ragionamento stupido]
+:~ posizioneNonScelta(Riga, Colonna), pedinaStabile(Riga, Colonna, Peso). [Peso : 3]

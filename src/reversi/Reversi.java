@@ -120,7 +120,7 @@ public class Reversi extends JPanel implements MouseListener, KeyListener{
 		g.setColor(Color.WHITE);
 		g.drawString("Bianchi: "+contB, 550, 60);
 		if(partitaFinita()==0) {
-			g.drawString("Premi R resettare", 250, 750);
+			g.drawString("Premi R per resettare", 230, 750);
 		if(player!=other) {
 			g.setColor(Color.BLACK);
 			g.drawString("Tocca al Nero", 250, 60);

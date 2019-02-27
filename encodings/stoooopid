@@ -1,0 +1,11 @@
+% mosse valide
+mossaValida(X,Y) :- cell(X,Y,3).
+
+% posizionescelta e non, si spiega da solo
+posizioneScelta(X,Y) | posizioneNonScelta(X,Y) :- mossaValida(X,Y).
+
+% Ovviamente si può scegliere solo una soluzione
+:- not #count{X,Y: posizioneScelta(X,Y)}=1.
+
+% Output
+answer(X,Y) :- posizioneScelta(X,Y).
