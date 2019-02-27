@@ -139,28 +139,28 @@ pedineMangiate(XR, YR) :- posizioneScelta(X, Y), pedineGirabiliDiagonale(X, Y, X
 %Ora vediamo la quantità di caselle vuote che ha una pedina che dovrebbe essere mangiata, salvandocela
 
 %SinistraSopra
-casellaVuota(X, Y) :- pedineMangiate(X, Y), not pedineMangiate(X2, Y2), cell(X2, Y2, 0), X = X2 + 1, Y = Y2 + 1.
+casellaVuota(X, Y) :- pedineMangiate(X, Y), not pedineMangiate(X2, Y2), cell(X2, Y2, V), X = X2 + 1, Y = Y2 + 1, V!=1, V!=2.
 
 %Sopra
-casellaVuota(X, Y) :- pedineMangiate(X, Y), not pedineMangiate(X2, Y), cell(X2, Y, 0), X = X2 + 1.
+casellaVuota(X, Y) :- pedineMangiate(X, Y), not pedineMangiate(X2, Y), cell(X2, Y, V), X = X2 + 1, V!=1, V!=2.
 
 %DestraSopra
-casellaVuota(X, Y) :- pedineMangiate(X, Y), not pedineMangiate(X2, Y2), cell(X2, Y2, 0), X = X2 + 1, Y2 = Y + 1.
+casellaVuota(X, Y) :- pedineMangiate(X, Y), not pedineMangiate(X2, Y2), cell(X2, Y2, V), X = X2 + 1, Y2 = Y + 1, V!=1, V!=2.
 
 %Sinistra
-casellaVuota(X, Y) :- pedineMangiate(X, Y), not pedineMangiate(X, Y2), cell(X, Y2, 0), Y = Y2 + 1.
+casellaVuota(X, Y) :- pedineMangiate(X, Y), not pedineMangiate(X, Y2), cell(X, Y2, V), Y = Y2 + 1, V!=1, V!=2.
 
 %Destra
-casellaVuota(X, Y) :- pedineMangiate(X, Y), not pedineMangiate(X, Y2), cell(X, Y2, 0), Y2 = Y + 1.
+casellaVuota(X, Y) :- pedineMangiate(X, Y), not pedineMangiate(X, Y2), cell(X, Y2, V), Y2 = Y + 1, V!=1, V!=2.
 
 %SinistraSotto
-casellaVuota(X, Y) :- pedineMangiate(X, Y), not pedineMangiate(X2, Y2), cell(X2, Y2, 0), X2 = X + 1, Y = Y2 + 1.
+casellaVuota(X, Y) :- pedineMangiate(X, Y), not pedineMangiate(X2, Y2), cell(X2, Y2, V), X2 = X + 1, Y = Y2 + 1, V!=1, V!=2.
 
 %Sotto
-casellaVuota(X, Y) :- pedineMangiate(X, Y), not pedineMangiate(X2, Y), cell(X2, Y, 0), X2 = X + 1.
+casellaVuota(X, Y) :- pedineMangiate(X, Y), not pedineMangiate(X2, Y), cell(X2, Y, V), X2 = X + 1, V!=1, V!=2.
 
 %DestraSotto
-casellaVuota(X, Y) :- pedineMangiate(X, Y), not pedineMangiate(X2, Y2), cell(X2, Y2, 0), X2 = X + 1, Y2 = Y + 1.
+casellaVuota(X, Y) :- pedineMangiate(X, Y), not pedineMangiate(X2, Y2), cell(X2, Y2, V), X2 = X + 1, Y2 = Y + 1, V!=1, V!=2.
 
 %Controlla se la pedina mangiata è una pedina di frontiera
 mossaValidaFutura(X, Y) :- pedineMangiate(X, Y), casellaVuota(X, Y).
