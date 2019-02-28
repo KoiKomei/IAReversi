@@ -31,8 +31,8 @@ public class Main {
 	JPanel menu= new JPanel();
 	Reversi stupid=new Reversi("encodings/stoooopid");
 	Reversi facile=new Reversi("encodings/easy");
-	Reversi normale=new Reversi("encodings/medium");
-	Reversi difficile=new Reversi("encodings/finalHard");
+	Reversi normale=new Reversi("encodings/OldHard");
+	Reversi difficile=new Reversi("encodings/FinalHard");
 	
 	JButton oof=new JButton("Stupido");
 	JButton easy=new JButton("Facile");

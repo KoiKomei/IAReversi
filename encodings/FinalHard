@@ -1,7 +1,7 @@
 %Guess and check, default per ogni modalità
 
 % il numero di righe e di colonne della matrice
-rigaOcolonna(0..7).
+rigacolonna(0..7).
 
 % tutte le caselle occupate 
 casellaOccupata(X, Y, Valore) :- cell(X, Y, Valore), Valore != 0, Valore != 3.
@@ -65,80 +65,66 @@ pedinaStabile(6,1,16).
 pedinaStabile(6,6,16).
 
 % Se c'è un angolo e non lo vuole prendere
-:~ posizioneNonScelta(Riga, Colonna), pedinaAngolo(Riga, Colonna). [1:7]
+:~ posizioneNonScelta(X, Y), pedinaAngolo(X, Y). [1:7]
 
 % In caso cerca di prendere una pedina di un certo tipo ed è una pedina stabile
-:~ posizioneScelta(Riga, Colonna), pedinaStabile(Riga, Colonna, Peso). [Peso : 3]
-
+:~ posizioneScelta(X, Y), pedinaStabile(X, Y, Peso). [Peso : 3]
 
 %fine pedine stabili ed angoli
 
 
-%inizio pedine di frontiera e muri
-
+%inizio pedine di frontiera
 
 %data la struttura del nostro reversi, ci siamo dovuti ricalcolare tutta la matrice
-%controllo delle pedine per vedere quali sono vuote od occupate proprio dal colore della CPU
-
-casellaInutileSinistra(X, Y1, Y2) :- casellaOccupata(X, Y2, 1), mossaValida(X, Y3), Y3 > Y1, Y3 < Y2, rigaOcolonna(Y1).
-casellaInutileDestra(X, Y1, Y2) :- casellaOccupata(X, Y2, 1), mossaValida(X, Y3), Y3 < Y1, Y3 > Y2, rigaOcolonna(Y1).
-
-casellaInutileSopra(Y, X1, X2) :- casellaOccupata(X2, Y, 1), mossaValida(X3, Y), X3 > X1, X3 < X2, rigaOcolonna(X1).
-casellaInutileSotto(Y, X1, X2) :- casellaOccupata(X2, Y, 1), mossaValida(X3, Y), X3 < X1, X3 > X2, rigaOcolonna(X1).
-
-casellaInutileSinistraSopra(X1, Y1, X2, Y2) :- casellaOccupata(X2, Y2, 1), mossaValida(X3, Y3), X1 = X3 + K1, Y1 = Y3 + K1, X2 = X3 - K2, Y2 = Y3 - K2, rigaOcolonna(K1), rigaOcolonna(K2), rigaOcolonna(X1), rigaOcolonna(Y1).
-casellaInutileDestraSopra(X1, Y1, X2, Y2) :- casellaOccupata(X2, Y2, 1), mossaValida(X3, Y3), X1 = X3 + K1, Y1 = Y3 - K1, X2 = X3 - K2, Y2 = Y3 + K2, rigaOcolonna(K1), rigaOcolonna(K2), rigaOcolonna(X1), rigaOcolonna(Y1).
-casellaInutileSinistraSotto(X1, Y1, X2, Y2) :- casellaOccupata(X2, Y2, 1), mossaValida(X3, Y3), X1 = X3 - K1, Y1 = Y3 + K1, X2 = X3 + K2, Y2 = Y3 - K2, rigaOcolonna(K1), rigaOcolonna(K2), rigaOcolonna(X1), rigaOcolonna(Y1).
-casellaInutileDestraSotto(X1, Y1, X2, Y2) :- casellaOccupata(X2, Y2, 1), mossaValida(X3, Y3), X1 = X3 - K1, Y1 = Y3 - K1, X2 = X3 + K2, Y2 = Y3 + K2, rigaOcolonna(K1), rigaOcolonna(K2), rigaOcolonna(X1), rigaOcolonna(Y1).
-
 %ci salviamo le caselle occupate dalla cpu e quelle vuote
 
-casellaNonOccupabileSinistra(X, Y1, Y2) :- casellaInutileSinistra(X, Y1, Y2).
-casellaNonOccupabileSinistra(X, Y1, Y2) :- casellaOccupata(X, Y2, 1), casellaOccupata(X, Y3, 1), Y3 > Y1, Y3 < Y2, rigaOcolonna(Y1).
+casellaNonOccupabileSinistra(X, Y1, Y2) :- casellaOccupata(X, Y2, 1), mossaValida(X, Y3), cell(X, Y1, V), V!=2, Y3 > Y1, Y3 < Y2.
+casellaNonOccupabileSinistra(X, Y1, Y2) :- casellaOccupata(X, Y2, 1), casellaOccupata(X, Y3, 1), cell(X, Y1, _), Y3 > Y1, Y3 < Y2.
 
-casellaNonOccupabileDestra(X, Y1, Y2) :- casellaInutileDestra(X, Y1, Y2).
-casellaNonOccupabileDestra(X, Y1, Y2) :- casellaOccupata(X, Y2, 1), casellaOccupata(X, Y3, 1), Y3 < Y1, Y3 > Y2, rigaOcolonna(Y1).
+casellaNonOccupabileDestra(X, Y1, Y2) :- casellaOccupata(X, Y2, 1), mossaValida(X, Y3), cell(X, Y1, V), V!=2, Y3 < Y1, Y3 > Y2.
+casellaNonOccupabileDestra(X, Y1, Y2) :- casellaOccupata(X, Y2, 1), casellaOccupata(X, Y3, 1), cell(X, Y1, _), Y3 < Y1, Y3 > Y2.
 
-casellaNonOccupabileSopra(Y, X1, X2) :- casellaInutileSopra(Y, X1, X2).
-casellaNonOccupabileSopra(Y, X1, X2) :- casellaOccupata(X2, Y, 1), casellaOccupata(X3, Y, 1), X3 > X1, X3 < X2, rigaOcolonna(X1).
+casellaNonOccupabileSopra(Y, X1, X2) :- casellaOccupata(X2, Y, 1), mossaValida(X3, Y), cell(X1, Y, V), V!=2, X3 > X1, X3 < X2.
+casellaNonOccupabileSopra(Y, X1, X2) :- casellaOccupata(X2, Y, 1), casellaOccupata(X3, Y, 1), cell(X1, Y, _), X3 > X1, X3 < X2.
 
-casellaNonOccupabileSotto(Y, X1, X2) :- casellaInutileSotto(Y, X1, X2).
-casellaNonOccupabileSotto(Y, X1, X2) :- casellaOccupata(X2, Y, 1), casellaOccupata(X3, Y, 1), X3 < X1, X3 > X2, rigaOcolonna(X1).
+casellaNonOccupabileSotto(Y, X1, X2) :- casellaOccupata(X2, Y, 1), mossaValida(X3, Y), cell(X1, Y, V), V!=2, X3 < X1, X3 > X2.
+casellaNonOccupabileSotto(Y, X1, X2) :- casellaOccupata(X2, Y, 1), casellaOccupata(X3, Y, 1), cell(X1, Y, _), X3 < X1, X3 > X2.
 
-casellaNonOccupabileSinistraSopra(X1, Y1, X2, Y2) :- casellaInutileSinistraSopra(X1, Y1, X2, Y2).
-casellaNonOccupabileSinistraSopra(X1, Y1, X2, Y2) :- casellaOccupata(X2, Y2, 1), casellaOccupata(X3, Y3, 1), X1 = X3 + K1, Y1 = Y3 + K1, X2 = X3 - K2, Y2 = Y3 - K2, rigaOcolonna(K1), rigaOcolonna(K2), rigaOcolonna(X1), rigaOcolonna(Y1).
+casellaNonOccupabileSinistraSopra(X1, Y1, X2, Y2) :- casellaOccupata(X2, Y2, 1), mossaValida(X3, Y3), cell(X1, Y1, V), V!=2, X1 = X3 + K, Y1 = Y3 + K, X2 = X3 - J, Y2 = Y3 - J, rigacolonna(K), rigacolonna(J).
+casellaNonOccupabileSinistraSopra(X1, Y1, X2, Y2) :- casellaOccupata(X2, Y2, 1), casellaOccupata(X3, Y3, 1), cell(X1, Y, _), X1 = X3 + K, Y1 = Y3 + K, X2 = X3 - J, Y2 = Y3 - J, rigacolonna(K), rigacolonna(J).
 
-casellaNonOccupabileDestraSopra(X1, Y1, X2, Y2) :- casellaInutileDestraSopra(X1, Y1, X2, Y2).
-casellaNonOccupabileDestraSopra(X1, Y1, X2, Y2) :- casellaOccupata(X2, Y2, 1), casellaOccupata(X3, Y3, 1), X1 = X3 + K1, Y1 = Y3 - K1, X2 = X3 - K2, Y2 = Y3 + K2, rigaOcolonna(K1), rigaOcolonna(K2), rigaOcolonna(X1), rigaOcolonna(Y1).
+casellaNonOccupabileDestraSopra(X1, Y1, X2, Y2) :- casellaOccupata(X2, Y2, 1), mossaValida(X3, Y3), cell(X1, Y1, V), V!=2, X1 = X3 + K, Y1 = Y3 - K, X2 = X3 - J, Y2 = Y3 + J, rigacolonna(K), rigacolonna(J).
+casellaNonOccupabileDestraSopra(X1, Y1, X2, Y2) :- casellaOccupata(X2, Y2, 1), casellaOccupata(X3, Y3, 1), cell(X1, Y1, _), X1 = X3 + K, Y1 = Y3 - K, X2 = X3 - J, Y2 = Y3 + J, rigacolonna(K), rigacolonna(J).
 
-casellaNonOccupabileDestraSopra(X1, Y1, X2, Y2) :- casellaInutileSinistraSotto(X1, Y1, X2, Y2).
-casellaNonOccupabileDestraSopra(X1, Y1, X2, Y2) :- casellaOccupata(X2, Y2, 1), casellaOccupata(X3, Y3, 1), X1 = X3 - K1, Y1 = Y3 + K1, X2 = X3 + K2, Y2 = Y3 - K2, rigaOcolonna(K1), rigaOcolonna(K2), rigaOcolonna(X1), rigaOcolonna(Y1).
+casellaNonOccupabileSinistraSotto(X1, Y1, X2, Y2) :- casellaOccupata(X2, Y2, 1), mossaValida(X3, Y3), cell(X1, Y1, V), V!=2, X1 = X3 - K, Y1 = Y3 + K, X2 = X3 + J, Y2 = Y3 - J, rigacolonna(K), rigacolonna(J).
+casellaNonOccupabileSinistraSotto(X1, Y1, X2, Y2) :- casellaOccupata(X2, Y2, 1), casellaOccupata(X3, Y3, 1), cell(X1, Y1, _), X1 = X3 - K, Y1 = Y3 + K, X2 = X3 + J, Y2 = Y3 - J, rigacolonna(K), rigacolonna(J).
 
-casellaNonOccupabileDestraSotto(X1, Y1, X2, Y2) :- casellaInutileDestraSotto(X1, Y1, X2, Y2).
-casellaNonOccupabileDestraSotto(X1, Y1, X2, Y2) :- casellaOccupata(X2, Y2, 1), casellaOccupata(X3, Y3, 1), X1 = X3 - K1, Y1 = Y3 - K1, X2 = X3 + K2, Y2 = Y3 + K2, rigaOcolonna(K1), rigaOcolonna(K2), rigaOcolonna(X1), rigaOcolonna(Y1).
-
-
-%ora ci salviamo tutte le pedine che si dovrebbero girare con la mossa che vogliamo fare
-
-pedineGirabiliRiga(X, Y1, Y2, Y) :- casellaOccupata(X, Y, 2), casellaOccupata(X, Y2, 1), posizioneScelta(X, Y1), Y > Y1, Y < Y2, not casellaNonOccupabileSinistra(X, Y1, Y2).
-pedineGirabiliRiga(X, Y1, Y2, Y) :- casellaOccupata(X, Y, 2), casellaOccupata(X, Y2, 1), posizioneScelta(X, Y1), Y < Y1, Y > Y2, not casellaNonOccupabileDestra(X, Y1, Y2).
-
-pedineGirabiliColonna(X1, X2, Y, X) :- casellaOccupata(X, Y, 2), casellaOccupata(X2, Y, 1), posizioneScelta(X1, Y), X > X1, X < X2, not casellaNonOccupabileSopra(Y, X1, X2).
-pedineGirabiliColonna(X1, X2, Y, X) :- casellaOccupata(X, Y, 2), casellaOccupata(X2, Y, 1), posizioneScelta(X1, Y), X < X1, X > X2, not casellaNonOccupabileSotto(Y, X1, X2).
-
-pedineGirabiliDiagonale(X1, Y1, X2, Y2, X, Y) :- casellaOccupata(X, Y, 2), casellaOccupata(X2, Y2, 1), posizioneScelta(X1, Y1), X1 = X + K1, Y1 = Y + K1, X2 = X - K2, Y2 = Y - K2, rigaOcolonna(K1), rigaOcolonna(K2), rigaOcolonna(X1), rigaOcolonna(Y1), not casellaNonOccupabileSinistraSopra(X1, Y1, X2, Y2).
-pedineGirabiliDiagonale(X1, Y1, X2, Y2, X, Y) :- casellaOccupata(X, Y, 2), casellaOccupata(X2, Y2, 1), posizioneScelta(X1, Y1), X1 = X + K1, Y1 = Y - K1, X2 = X - K2, Y2 = Y + K2, rigaOcolonna(K1), rigaOcolonna(K2), rigaOcolonna(X1), rigaOcolonna(Y1), not casellaNonOccupabileDestraSopra(X1, Y1, X2, Y2).
-pedineGirabiliDiagonale(X1, Y1, X2, Y2, X, Y) :- casellaOccupata(X, Y, 2), casellaOccupata(X2, Y2, 1), posizioneScelta(X1, Y1), X1 = X - K1, Y1 = Y + K1, X2 = X + K2, Y2 = Y - K2, rigaOcolonna(K1), rigaOcolonna(K2), rigaOcolonna(X1), rigaOcolonna(Y1), not casellaNonOccupabileDestraSopra(X1, Y1, X2, Y2).
-pedineGirabiliDiagonale(X1, Y1, X2, Y2, X, Y) :- casellaOccupata(X, Y, 2), casellaOccupata(X2, Y2, 1), posizioneScelta(X1, Y1), X1 = X - K1, Y1 = Y - K1, X2 = X + K2, Y2 = Y + K2, rigaOcolonna(K1), rigaOcolonna(K2), rigaOcolonna(X1), rigaOcolonna(Y1), not casellaNonOccupabileDestraSotto(X1, Y1, X2, Y2).
-
-%ora ci salviamo tutte le pedine mangiate in ogni direzione
-
-pedineMangiate(X, YR) :- posizioneScelta(X, Y), pedineGirabiliRiga(X, Y, Y2, YR), casellaOccupata(X, Y2, 1).
-pedineMangiate(XR, Y) :- posizioneScelta(X, Y), pedineGirabiliColonna(X, X2, Y, XR), casellaOccupata(X2, Y, 1).
-pedineMangiate(XR, YR) :- posizioneScelta(X, Y), pedineGirabiliDiagonale(X, Y, X2, Y2, XR, YR), casellaOccupata(X2, Y2, 1).
+casellaNonOccupabileDestraSotto(X1, Y1, X2, Y2) :- casellaOccupata(X2, Y2, 1), mossaValida(X3, Y3), cell(X1, Y1, V), V!=2, X1 = X3 - K, Y1 = Y3 - K, X2 = X3 + J, Y2 = Y3 + J, rigacolonna(K), rigacolonna(J).
+casellaNonOccupabileDestraSotto(X1, Y1, X2, Y2) :- casellaOccupata(X2, Y2, 1), casellaOccupata(X3, Y3, 1), cell(X1, Y1, _), X1 = X3 - K, Y1 = Y3 - K, X2 = X3 + J, Y2 = Y3 + J, rigacolonna(K), rigacolonna(J).
 
 
-%Ora vediamo la quantità di caselle vuote che ha una pedina che dovrebbe essere mangiata, salvandocela
+%ora ci salviamo tutte le pedine che si potrebbero girare con una scelta che facciamo
+
+pedineGirabiliRiga(X, Y, Y1, Y2) :- casellaOccupata(X, Y, 2), casellaOccupata(X, Y2, 1), posizioneScelta(X, Y1), Y > Y1, Y < Y2, not casellaNonOccupabileSinistra(X, Y1, Y2).
+pedineGirabiliRiga(X, Y, Y1, Y2) :- casellaOccupata(X, Y, 2), casellaOccupata(X, Y2, 1), posizioneScelta(X, Y1), Y < Y1, Y > Y2, not casellaNonOccupabileDestra(X, Y1, Y2).
+
+pedineGirabiliColonna(X, Y, X1, X2) :- casellaOccupata(X, Y, 2), casellaOccupata(X2, Y, 1), posizioneScelta(X1, Y), X > X1, X < X2, not casellaNonOccupabileSopra(Y, X1, X2).
+pedineGirabiliColonna(X, Y, X1, X2) :- casellaOccupata(X, Y, 2), casellaOccupata(X2, Y, 1), posizioneScelta(X1, Y), X < X1, X > X2, not casellaNonOccupabileSotto(Y, X1, X2).
+
+pedineGirabiliDiagonale(X, Y, X1, X2, Y1, Y2) :- casellaOccupata(X, Y, 2), casellaOccupata(X2, Y2, 1), posizioneScelta(X1, Y1), cell(X1, Y1, 2), not casellaNonOccupabileSinistraSopra(X1, Y1, X2, Y2), X1 = X + K, Y1 = Y + K, X2 = X - J, Y2 = Y - J, rigacolonna(K), rigacolonna(J).
+pedineGirabiliDiagonale(X, Y, X1, X2, Y1, Y2) :- casellaOccupata(X, Y, 2), casellaOccupata(X2, Y2, 1), posizioneScelta(X1, Y1), cell(X1, Y1, 2), not casellaNonOccupabileDestraSopra(X1, Y1, X2, Y2), X1 = X + K, Y1 = Y - K, X2 = X - J, Y2 = Y + J, rigacolonna(K), rigacolonna(J).
+pedineGirabiliDiagonale(X, Y, X1, X2, Y1, Y2) :- casellaOccupata(X, Y, 2), casellaOccupata(X2, Y2, 1), posizioneScelta(X1, Y1), cell(X1, Y1, 2), not casellaNonOccupabileSinistraSotto(X1, Y1, X2, Y2), X1 = X - K, Y1 = Y + K, X2 = X + J, Y2 = Y - J, rigacolonna(K), rigacolonna(J).
+pedineGirabiliDiagonale(X, Y, X1, X2, Y1, Y2) :- casellaOccupata(X, Y, 2), casellaOccupata(X2, Y2, 1), posizioneScelta(X1, Y1), cell(X1, Y1, 2), not casellaNonOccupabileDestraSotto(X1, Y1, X2, Y2), X1 = X - K, Y1 = Y - K, X2 = X + J, Y2 = Y + J, rigacolonna(K), rigacolonna(J).
+
+%ora ci salviamo tutte le pedine che sarebbero mangiate
+
+pedineMangiate(X, YR) :- posizioneScelta(X, Y), pedineGirabiliRiga(X, YR, Y, Y2), casellaOccupata(X, Y2, 1).
+pedineMangiate(XR, Y) :- posizioneScelta(X, Y), pedineGirabiliColonna(XR, Y, X, X2), casellaOccupata(X2, Y, 1).
+pedineMangiate(XR, YR) :- posizioneScelta(X, Y), pedineGirabiliDiagonale(XR, YR, X, X2, Y, Y2), casellaOccupata(X2, Y2, 1).
+
+
+%Ora vediamo se ci sono caselle vuote intorno una pedina che dovrebbe essere mangiata, questo ci serve per capire quante pedine di 
+%frontiera verranno create
 
 %SinistraSopra
 casellaVuota(X, Y) :- pedineMangiate(X, Y), cell(X2, Y2, V), not posizioneScelta(X2, Y2), X = X2 + 1, Y = Y2 + 1, V!=1, V!=2.
@@ -165,7 +151,10 @@ casellaVuota(X, Y) :- pedineMangiate(X, Y), cell(X2, Y, V), not posizioneScelta(
 casellaVuota(X, Y) :- pedineMangiate(X, Y), cell(X2, Y2, V), not posizioneScelta(X2, Y2), X2 = X + 1, Y2 = Y + 1, V!=1, V!=2.
 
 %Controlla se la pedina mangiata è una pedina di frontiera
+%Si chiama mossaValidaFutura perché creando una pedina di frontiera, si danno mosse all'avversario
 mossaValidaFutura(X, Y) :- pedineMangiate(X, Y), casellaVuota(X, Y).
+
+%Se è una pedina di frontiera, penalizza
 
 :~ mossaValidaFutura(X, Y). [1 : 5]
 

@@ -68,9 +68,9 @@ pedinaStabile(6,1,16).
 pedinaStabile(6,6,16).
 
 % Se c'è un angolo e non lo vuole prendere
-:~ posizioneNonScelta(Riga, Colonna), pedinaAngolo(Riga, Colonna). [1:7]
+:~ posizioneNonScelta(X, Y), pedinaAngolo(X, Y). [1:7]
 
 % In caso cerca di prendere una pedina di un certo tipo ed è una pedina stabile
-:~ posizioneScelta(Riga, Colonna), pedinaStabile(Riga, Colonna, Peso). [Peso : 3]
+:~ posizioneScelta(X, Y), pedinaStabile(X, Y, Peso). [Peso : 3]
 
 

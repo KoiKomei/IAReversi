@@ -53,7 +53,7 @@ pedinaStabile(6,1,16).
 pedinaStabile(6,6,16).
 
 %Se c'è un angolo, è un male [Ragionamento stupido]
-:~ posizioneScelta(Riga, Colonna), pedinaAngolo(Riga, Colonna). [1:7]
+:~ posizioneScelta(X, Y), pedinaAngolo(X, Y). [1:7]
 
 %Se c'è una posizione orribile e non si è scelta [Ragionamento stupido]
-:~ posizioneNonScelta(Riga, Colonna), pedinaStabile(Riga, Colonna, Peso). [Peso : 3]
+:~ posizioneNonScelta(X, Y), pedinaStabile(X, Y, Peso). [Peso : 3]
