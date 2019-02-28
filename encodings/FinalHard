@@ -1,6 +1,7 @@
 %Guess and check, default per ogni modalità
 
 % il numero di righe e di colonne della matrice
+% ironicamente, alcune volte è più veloce di usare cell(_, _, _)
 rigacolonna(0..7).
 
 % tutte le caselle occupate 
